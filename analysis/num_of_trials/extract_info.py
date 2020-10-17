@@ -37,36 +37,55 @@ def find_option_with_common(choice, next_trial_options, outcome):
         return next_trial_options[1]
 
 
+def extract_MF_trials_pair_info(\
+    model_free_data, choice, next_trial_options, next_choice, outcome, pic_rewards):
 
-def extract_MB_MF_info(trails_options, chosens, realized_rewards, reward_probs, outcome):
+    common, unique = find_common_and_unique_MF(choice, next_trial_options, outcome)
+    if common:
+        model_free_data['common_reward'].append(pic_rewards[common-1][0])
+        model_free_data['unique_reward'].append(pic_rewards[unique-1][0])
+        model_free_data['repeat'].append(choice == next_choice)
 
-    common_reward_MF, unique_reward_MF = [], []
-    repeat_MF = []
-    common_reward_MB = []
-    repeat_MB, reward_prob_MB = [], []
+    return model_free_data
+
+
+def extract_MB_trials_pair_info(\
+    model_based_data, choice, next_trial_options, next_choice, outcome, pic_rewards, reward_prob):
+
+    if is_there_just_one_common(choice, next_trial_options, outcome):
+        option_with_common = find_option_with_common(choice, next_trial_options, outcome)
+        common = find_common_MB(choice, option_with_common, outcome)
+        model_based_data['common_reward'].append(pic_rewards[common-1][0])
+        model_based_data['repeat'].append(next_choice == option_with_common)
+        model_based_data['reward_prob'].append(reward_prob[common-1][0])
+
+    return model_based_data
+
+
+def extract_subject_trials_info(filtered_data):
+
+    trials_options = filtered_data['trials']
+    chosens = filtered_data['chosen']
+    realized_rewards = filtered_data['realized_reward']
+    reward_probs = filtered_data['reward_probs']
+    outcome = filtered_data['outcome']
+
+    model_free_data = {'common_reward': [], 'unique_reward': [], 'repeat': []}
+    model_based_data = {'common_reward': [], 'reward_prob': [], 'repeat': []}
 
     for i, (trial_options, choice, pic_rewards, reward_prob) in \
-        enumerate(zip(trails_options, chosens, realized_rewards, reward_probs)):
+        enumerate(zip(trials_options, chosens, realized_rewards, reward_probs)):
 
-        next_trial_options = trails_options[(i+1)%N_TRIALS]
+        next_trial_options = trials_options[(i+1)%N_TRIALS]
         next_choice = chosens[(i+1)%N_TRIALS]
 
         if (choice in ACCEPTED_CHOICES) and ((i+1) % N_BLOCK_TRIALS) and (next_choice in ACCEPTED_CHOICES):
 
             if choice in next_trial_options:
-                common, unique = find_common_and_unique_MF(choice, next_trial_options, outcome)
-                if common:
-                    common_reward_MF.append(pic_rewards[common-1][0])
-                    unique_reward_MF.append(pic_rewards[unique-1][0])
-                    repeat_MF.append(choice == next_choice)
-
+                model_free_data = extract_MF_trials_pair_info(\
+                    model_free_data, choice, next_trial_options, next_choice, outcome, pic_rewards)
             else:
-                if is_there_just_one_common(choice, next_trial_options, outcome):
-                    option_with_common = find_option_with_common(choice, next_trial_options, outcome)
-                    common = find_common_MB(choice, option_with_common, outcome)
-                    common_reward_MB.append(pic_rewards[common-1][0])
-                    repeat_MB.append(next_choice == option_with_common)
-                    reward_prob_MB.append(reward_prob[common-1][0])
+                model_based_data = extract_MB_trials_pair_info(\
+                    model_based_data, choice, next_trial_options, next_choice, outcome, pic_rewards, reward_prob)
 
-    return np.array(common_reward_MF), np.array(unique_reward_MF), np.array(repeat_MF),\
-            np.array(common_reward_MB), np.array(repeat_MB), np.array(reward_prob_MB)
+    return pd.DataFrame(model_free_data), pd.DataFrame(model_based_data)
