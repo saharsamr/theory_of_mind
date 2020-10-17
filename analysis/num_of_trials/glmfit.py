@@ -32,21 +32,11 @@ def clean_MBdata_for_glm(common_reward_MB, reward_prob_MB, repeat_MB):
     return df
 
 
-def fit_glm_MF(subject_data):
+def fit_binomial_glm(subject_data, formula):
 
-    MF_formula = 'repeat ~ common_reward*unique_reward'
-    y, x = dmatrices(MF_formula, subject_data, return_type='dataframe')
+    y, x = dmatrices(formula, subject_data, return_type='dataframe')
     MF_model = sm.GLM(y, x, family=sm.families.Binomial())
     MF_result = MF_model.fit()
 
     print(MF_result.summary())
-
-
-def fit_glm_MB(subject_data):
-
-    MB_formula = 'repeat ~ common_reward*reward_prob'
-    y, x = dmatrices(MB_formula, subject_data, return_type='dataframe')
-    MB_model = sm.GLM(y, x, family=sm.families.Binomial())
-    MB_result = MB_model.fit()
-
-    print(MB_result.summary())
+    return MF_model, MF_result
