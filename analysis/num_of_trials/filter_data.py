@@ -22,11 +22,11 @@ def filtered_data(path):
 
             id = data['ID'][0][0]
             filtered_data[id] = {
-                'chosen': data['chosen'].transpose().reshape(1, N_TRIALS),
+                'chosen': data['chosen'].transpose().reshape(1, N_TRIALS)[0].astype(np.int64),
                 'realized_reward': data['Subject']['realized_reward'][0][0],
-                'outcome': data['Subject']['outcome_mat'][0][0],
+                'outcome': data['Subject']['outcome_mat'][0][0].astype(np.int64),
                 'no_reverse': data['Subject']['Format'][0][0],
-                'trials': data['Subject']['Trials'][0][0],
+                'trials': data['Subject']['Trials'][0][0].astype(np.int64),
                 'reward_probs': data['Subject']['reward_prob'][0][0]
             }
 
