@@ -3,7 +3,6 @@ import pandas as pd
 
 
 ACCEPTED_CHOICES = [1, 2, 3, 4]
-N_TRIALS = 300
 N_BLOCK_TRIALS = 60
 
 
@@ -62,13 +61,14 @@ def extract_MB_trials_pair_info(\
     return model_based_data
 
 
-def extract_subject_trials_info(filtered_data):
+def extract_subject_trials_info(filtered_data, start_index):
 
     trials_options = filtered_data['trials']
     chosens = filtered_data['chosen']
     realized_rewards = filtered_data['realized_reward']
     reward_probs = filtered_data['reward_probs']
     outcome = filtered_data['outcome']
+    n_trials = len(trials_options)
 
     model_free_data = {'common_reward': [], 'unique_reward': [], 'repeat': []}
     model_based_data = {'common_reward': [], 'reward_prob': [], 'repeat': []}
@@ -76,10 +76,10 @@ def extract_subject_trials_info(filtered_data):
     for i, (trial_options, choice, pic_rewards, reward_prob) in \
         enumerate(zip(trials_options, chosens, realized_rewards, reward_probs)):
 
-        next_trial_options = trials_options[(i+1)%N_TRIALS]
-        next_choice = chosens[(i+1)%N_TRIALS]
+        next_trial_options = trials_options[(i+1)%n_trials]
+        next_choice = chosens[(i+1)%n_trials]
 
-        if (choice in ACCEPTED_CHOICES) and ((i+1) % N_BLOCK_TRIALS) and (next_choice in ACCEPTED_CHOICES):
+        if (choice in ACCEPTED_CHOICES) and ((i+1+start_index) % N_BLOCK_TRIALS) and (next_choice in ACCEPTED_CHOICES):
 
             if choice in next_trial_options:
                 model_free_data = extract_MF_trials_pair_info(\
