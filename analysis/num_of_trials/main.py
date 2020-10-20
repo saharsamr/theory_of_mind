@@ -11,6 +11,6 @@ def main():
 
     subjects_data = filtered_data('data/')
     for id, subject_data in subjects_data.items():
-            probs = analyse_single_subject(subject_data, id, WINDOW_SIZE, DIFF)
+            (probs, coefficients) = analyse_single_subject(subject_data, id, WINDOW_SIZE, DIFF)
             plot_whole_repeat_probs(probs, id)
             plot_window_repeat_probs(probs, WINDOW_SIZE, DIFF, id)

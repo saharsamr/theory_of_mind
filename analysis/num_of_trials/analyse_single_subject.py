@@ -7,7 +7,7 @@ import numpy as np
 N_TRIALS = 300
 
 
-def analyse_trials(subject_filtered_data, repeat_probs, start_index=0, end_index=N_TRIALS):
+def analyse_trials(subject_filtered_data, repeat_probs, coefficients, start_index=0, end_index=N_TRIALS):
 
     model_free_data, model_based_data = extract_subject_trials_info(subject_filtered_data, start_index)
 
@@ -19,7 +19,9 @@ def analyse_trials(subject_filtered_data, repeat_probs, start_index=0, end_index
     mf_model, mf_result = fit_binomial_glm(model_free_data, formula='repeat ~ common_reward*unique_reward')
     mb_model, mb_result = fit_binomial_glm(model_based_data, formula='repeat ~ common_reward*reward_prob')
 
-    return repeat_probs
+    coefficients = add_coefficients(coefficients, mf_result, mb_result, start_index, end_index)
+
+    return repeat_probs, coefficients
 
 
 def get_trials_subset(subject_filtered_data, start_index, end_index):
@@ -34,13 +36,29 @@ def get_trials_subset(subject_filtered_data, start_index, end_index):
     return result
 
 
-def analyse_with_moving_window(subject_filtered_data, window_size, diff, repeat_probs):
+def add_coefficients(coefficients, mf_result, mb_result, start_index=0, end_index=N_TRIALS):
+
+    coefficients['model_free'][(start_index, end_index)] = {
+        'common_reward': mf_result.params.get('common_reward[T.True]'),
+        'unique_reward': mf_result.params.get('unique_reward[T.True]'),
+        'interaction': mf_result.params.get('common_reward[T.True]:unique_reward[T.True]')
+    }
+    coefficients['model_based'][(start_index, end_index)] = {
+        'common_reward': mb_result.params.get('common_reward[T.True]'),
+        'reward_prob': mb_result.params.get('reward_prob'),
+        'interaction': mb_result.params.get('common_reward[T.True]:reward_prob')
+    }
+
+    return coefficients
+
+
+def analyse_with_moving_window(subject_filtered_data, window_size, diff, repeat_probs, coefficients):
 
     for start in range(0, N_TRIALS-window_size, diff):
         subset_filtered_data = get_trials_subset(subject_filtered_data, start, start+window_size)
-        repeat_probs = analyse_trials(subset_filtered_data, repeat_probs, start_index=start, end_index=start+window_size)
+        repeat_probs, coefficients = analyse_trials(subset_filtered_data, repeat_probs, coefficients, start, start+window_size)
 
-    return repeat_probs
+    return repeat_probs, coefficients
 
 
 def analyse_single_subject(subject_filtered_data, subject_ID, window_size, diff):
@@ -50,10 +68,15 @@ def analyse_single_subject(subject_filtered_data, subject_ID, window_size, diff)
         'model_based': {}
     }
 
-    repeat_probs = analyse_trials(subject_filtered_data, repeat_probs)
-    repeat_probs = analyse_with_moving_window(subject_filtered_data, window_size, diff, repeat_probs)
+    coefficients = {
+        'model_free': {},
+        'model_based': {}
+    }
 
-    return repeat_probs
+    repeat_probs, coefficients = analyse_trials(subject_filtered_data, repeat_probs, coefficients)
+    repeat_probs, coefficients = analyse_with_moving_window(subject_filtered_data, window_size, diff, repeat_probs, coefficients)
+
+    return repeat_probs, coefficients
 
 
 def calc_repeat_probs_MF(mf_data):
