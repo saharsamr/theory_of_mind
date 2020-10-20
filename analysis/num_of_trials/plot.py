@@ -45,7 +45,7 @@ def plot_whole_repeat_probs(repeat_probs, subject_ID):
     plt.show()
 
 
-def plot_sub_repeat_probs(repeat_probs, window_size, diff, subject_ID):
+def plot_window_repeat_probs(repeat_probs, window_size, diff, subject_ID):
 
     fig, axs = plt.subplots(5, 8)
     fig.suptitle('Subject#{}'.format(int(subject_ID)))
@@ -54,7 +54,7 @@ def plot_sub_repeat_probs(repeat_probs, window_size, diff, subject_ID):
         for j, key in enumerate(['model_free', 'model_based']):
 
             row, col = int(i/4), (i%4)*2+j
-            
+
             if key == 'model_free':
                 axs[row, col].set_title('MF: Trials {}:{}'.format(start, start+window_size))
                 plot_MF_probs(axs[row, col], repeat_probs, start, window_size)
