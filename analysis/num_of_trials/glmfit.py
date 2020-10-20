@@ -8,5 +8,4 @@ def fit_binomial_glm(subject_data, formula):
     MF_model = sm.GLM(y, x, family=sm.families.Binomial())
     MF_result = MF_model.fit()
 
-    print(MF_result.summary())
     return MF_model, MF_result
