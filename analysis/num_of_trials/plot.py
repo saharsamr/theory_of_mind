@@ -106,9 +106,11 @@ def plot_differece_means(differences_data, window_size, diff):
             errors = [differences_data[model_key][coef][x_label]['se'] for x_label in x_labels]
 
             axs[j, i].errorbar(xs, ys, yerr=errors, fmt='o')
+            axs[j, i].plot(xs, [0 for x in xs], label='zero line')
             axs[j, i].set_xticks(range(len(xs)))
             axs[j, i].set_xticklabels(x_labels, rotation=45)
-            axs[j, i].set_title('{}: {} coef\'s mean over all subjects'\
+            axs[j, i].set_title('{}: {} coef\'s difference from main coef'\
                 .format(model_key.replace('_', '-'), coef.replace('_', ' ')))
+            axs[j, i].legend()
 
     plt.show()

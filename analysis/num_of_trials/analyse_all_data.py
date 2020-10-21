@@ -28,7 +28,8 @@ def vectorize_data(subjects_coefficients, window_size, diff):
                 for id, subject_coefs in subjects_coefficients.items():
 
                     point_key = (start, start+window_size)
-                    vectorized_data[model_key][coef][point_key].append(subject_coefs[model_key][point_key][coef])
+                    vectorized_data[model_key][coef][point_key].append(\
+                        subject_coefs[model_key][point_key][coef] - subject_coefs[model_key][(0, N_TRIALS)][coef])
 
     return vectorized_data
 
