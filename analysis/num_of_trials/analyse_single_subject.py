@@ -21,6 +21,16 @@ def analyse_trials(subject_filtered_data, repeat_probs, coefficients, start_inde
 
     coefficients = add_coefficients(coefficients, mf_result, mb_result, start_index, end_index)
 
+    if start_index == 0 and end_index == N_TRIALS:
+        print('======================================================================================')
+        print('--------------------------------------Model-Free--------------------------------------')
+        print('======================================================================================')
+        print(mf_result.summary())
+        print('======================================================================================')
+        print('--------------------------------------Model-Based--------------------------------------')
+        print('======================================================================================')
+        print(mb_result.summary())
+
     return repeat_probs, coefficients
 
 

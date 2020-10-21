@@ -43,7 +43,7 @@ def extract_MF_trials_pair_info(\
     if common:
         model_free_data['common_reward'].append(pic_rewards[common-1][0])
         model_free_data['unique_reward'].append(pic_rewards[unique-1][0])
-        model_free_data['repeat'].append(choice == next_choice)
+        model_free_data['repeat'].append(1 if choice == next_choice else 0)
 
     return model_free_data
 
@@ -55,7 +55,7 @@ def extract_MB_trials_pair_info(\
         option_with_common = find_option_with_common(choice, next_trial_options, outcome)
         common = find_common_MB(choice, option_with_common, outcome)
         model_based_data['common_reward'].append(pic_rewards[common-1][0])
-        model_based_data['repeat'].append(next_choice == option_with_common)
+        model_based_data['repeat'].append(1 if next_choice == option_with_common else 0)
         model_based_data['reward_prob'].append(reward_prob[common-1][0])
 
     return model_based_data
