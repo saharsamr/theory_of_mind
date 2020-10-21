@@ -78,9 +78,10 @@ def plot_subject_single_coef(coefficients, x_labels, axs, model_label, coeff_nam
     axs.legend()
 
 
-def plot_subject_windows_all_coefs(coefficients, window_size, diff):
+def plot_subject_windows_all_coefs(coefficients, window_size, diff, subject_ID):
 
     fig, axs = plt.subplots(3, 2)
+    fig.suptitle('Subject#{}'.format(int(subject_ID)))
     fig.tight_layout()
     x_labels = [(i, i+window_size) for i in range(0, N_TRIALS-window_size, diff)]
 
@@ -88,5 +89,26 @@ def plot_subject_windows_all_coefs(coefficients, window_size, diff):
         plot_subject_single_coef(coefficients, x_labels, axs[i, 0], 'model_free', mf_coeff_name)
     for i, mb_coeff_name in enumerate(['common_reward', 'reward_prob', 'interaction']):
         plot_subject_single_coef(coefficients, x_labels, axs[i, 1], 'model_based', mb_coeff_name)
+
+    plt.show()
+
+
+def plot_differece_means(differences_data, window_size, diff):
+
+    x_labels = [(i, i+window_size) for i in range(0, N_TRIALS-window_size, diff)]
+    xs = [i for i, _ in enumerate(x_labels)]
+    fig, axs = plt.subplots(3, 2)
+    fig.tight_layout()
+
+    for i, model_key in enumerate(differences_data.keys()):
+        for j, coef in enumerate(differences_data[model_key].keys()):
+            ys = [differences_data[model_key][coef][x_label]['mean'] for x_label in x_labels]
+            errors = [differences_data[model_key][coef][x_label]['se'] for x_label in x_labels]
+
+            axs[j, i].errorbar(xs, ys, yerr=errors, fmt='o')
+            axs[j, i].set_xticks(range(len(xs)))
+            axs[j, i].set_xticklabels(x_labels, rotation=45)
+            axs[j, i].set_title('{}: {} coef\'s mean over all subjects'\
+                .format(model_key.replace('_', '-'), coef.replace('_', ' ')))
 
     plt.show()
