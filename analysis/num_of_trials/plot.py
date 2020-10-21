@@ -63,3 +63,30 @@ def plot_window_repeat_probs(repeat_probs, window_size, diff, subject_ID):
                 plot_MB_probs(axs[row, col], repeat_probs, start, window_size)
 
     plt.show()
+
+
+def plot_subject_single_coef(coefficients, x_labels, axs, model_label, coeff_name):
+
+    xs = [i for i, _ in enumerate(x_labels)]
+    ys = [coefficients[model_label][x_label][coeff_name] for x_label in x_labels]
+    axs.plot(xs, ys, label='window\'s coefficient')
+    main_y = [coefficients[model_label][(0, N_TRIALS)][coeff_name] for y in ys]
+    axs.plot(xs, main_y, label='final coefficient')
+    axs.set_xticks(range(len(xs)))
+    axs.set_xticklabels(x_labels, rotation=45)
+    axs.set_title('{}: {}\'s coeff'.format(model_label.replace('_', '-'), coeff_name).replace('_', ' '))
+    axs.legend()
+
+
+def plot_subject_windows_all_coefs(coefficients, window_size, diff):
+
+    fig, axs = plt.subplots(3, 2)
+    fig.tight_layout()
+    x_labels = [(i, i+window_size) for i in range(0, N_TRIALS-window_size, diff)]
+
+    for i, mf_coeff_name in enumerate(['common_reward', 'unique_reward', 'interaction']):
+        plot_subject_single_coef(coefficients, x_labels, axs[i, 0], 'model_free', mf_coeff_name)
+    for i, mb_coeff_name in enumerate(['common_reward', 'reward_prob', 'interaction']):
+        plot_subject_single_coef(coefficients, x_labels, axs[i, 1], 'model_based', mb_coeff_name)
+
+    plt.show()
