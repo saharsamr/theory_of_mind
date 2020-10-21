@@ -83,11 +83,10 @@ def t_test_on_differences(vectorize_differences):
         for coef in vectorize_differences[model_key].keys():
             for point_key, values in vectorize_differences[model_key][coef].items():
 
-                print(values)
                 T = stats.ttest_ind(values, [0 for v in values])
                 t_test_results[model_key][coef][point_key] = {
                     'statistic':  T.statistic,
-                    'pvalue': T.statistic
+                    'pvalue': T.pvalue
                 }
 
     return t_test_results

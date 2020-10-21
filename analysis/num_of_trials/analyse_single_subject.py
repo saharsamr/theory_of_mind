@@ -1,5 +1,6 @@
 from analysis.num_of_trials.extract_info import extract_subject_trials_info
 from analysis.num_of_trials.glmfit import fit_binomial_glm
+from analysis.num_of_trials.print_results import print_glm_results
 
 import numpy as np
 
@@ -22,14 +23,7 @@ def analyse_trials(subject_filtered_data, repeat_probs, coefficients, start_inde
     coefficients = add_coefficients(coefficients, mf_result, mb_result, start_index, end_index)
 
     if start_index == 0 and end_index == N_TRIALS:
-        print('======================================================================================')
-        print('--------------------------------------Model-Free--------------------------------------')
-        print('======================================================================================')
-        print(mf_result.summary())
-        print('======================================================================================')
-        print('--------------------------------------Model-Based--------------------------------------')
-        print('======================================================================================')
-        print(mb_result.summary())
+        print_glm_results(mf_result, mb_result)
 
     return repeat_probs, coefficients
 
