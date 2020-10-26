@@ -78,12 +78,15 @@ def plot_subject_single_coef(coefficients, x_labels, axs, model_label, coeff_nam
     axs.legend()
 
 
-def plot_subject_windows_all_coefs(coefficients, window_size, diff, subject_ID):
+def plot_subject_windows_all_coefs(coefficients, window_size, diff, subject_ID, growing_window=True):
 
     fig, axs = plt.subplots(3, 2)
     fig.suptitle('Subject#{}'.format(int(subject_ID)))
     fig.tight_layout()
-    x_labels = [(i, i+window_size) for i in range(0, N_TRIALS-window_size, diff)]
+    if growing_window:
+        x_labels = [(0, end) for end in range(50, N_TRIALS, diff)]
+    else:
+        x_labels = [(i, i+window_size) for i in range(0, N_TRIALS-window_size, diff)]
 
     for i, mf_coeff_name in enumerate(['common_reward', 'unique_reward', 'interaction']):
         plot_subject_single_coef(coefficients, x_labels, axs[i, 0], 'model_free', mf_coeff_name)
@@ -93,9 +96,12 @@ def plot_subject_windows_all_coefs(coefficients, window_size, diff, subject_ID):
     plt.show()
 
 
-def plot_differece_means(differences_data, window_size, diff):
+def plot_differece_means(differences_data, window_size, diff, growing_window=True):
 
-    x_labels = [(i, i+window_size) for i in range(0, N_TRIALS-window_size, diff)]
+    if growing_window:
+        x_labels = [(0, end) for end in range(50, N_TRIALS, diff)]
+    else:
+        x_labels = [(i, i+window_size) for i in range(0, N_TRIALS-window_size, diff)]
     xs = [i for i, _ in enumerate(x_labels)]
     fig, axs = plt.subplots(3, 2)
     fig.tight_layout()

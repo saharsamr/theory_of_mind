@@ -8,7 +8,7 @@ N_TRIALS = 300
 DIFF = 5
 
 
-def vectorize_differences(subjects_coefficients, window_size, diff):
+def vectorize_differences(subjects_coefficients, window_size, diff, growing_window=True):
 
     vectorized_differences = {
         'model_free': {
@@ -23,14 +23,24 @@ def vectorize_differences(subjects_coefficients, window_size, diff):
         }
     }
 
-    for model_key in vectorized_differences.keys():
-        for coef in vectorized_differences[model_key].keys():
-            for start in range(0, N_TRIALS-window_size, diff):
-                for id, subject_coefs in subjects_coefficients.items():
+    if growing_window:
+        for model_key in vectorized_differences.keys():
+            for coef in vectorized_differences[model_key].keys():
+                for end in range(50, N_TRIALS, diff):
+                    for id, subject_coefs in subjects_coefficients.items():
 
-                    point_key = (start, start+window_size)
-                    vectorized_differences[model_key][coef][point_key].append(\
-                        subject_coefs[model_key][point_key][coef] - subject_coefs[model_key][(0, N_TRIALS)][coef])
+                        point_key = (0, end)
+                        vectorized_differences[model_key][coef][point_key].append(\
+                            subject_coefs[model_key][point_key][coef] - subject_coefs[model_key][(0, N_TRIALS)][coef])
+    else:
+        for model_key in vectorized_differences.keys():
+            for coef in vectorized_differences[model_key].keys():
+                for start in range(0, N_TRIALS-window_size, diff):
+                    for id, subject_coefs in subjects_coefficients.items():
+
+                        point_key = (start, start+window_size)
+                        vectorized_differences[model_key][coef][point_key].append(\
+                            subject_coefs[model_key][point_key][coef] - subject_coefs[model_key][(0, N_TRIALS)][coef])
 
     return vectorized_differences
 

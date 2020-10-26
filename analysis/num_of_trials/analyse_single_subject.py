@@ -65,6 +65,15 @@ def analyse_with_moving_window(subject_filtered_data, window_size, diff, repeat_
     return repeat_probs, coefficients
 
 
+def analyse_with_growing_window(subject_filtered_data, repeat_probs, coefficients, diff):
+
+    for end in range(50, N_TRIALS, diff):
+        subset_filtered_data = get_trials_subset(subject_filtered_data, 0, end)
+        repeat_probs, coefficients = analyse_trials(subset_filtered_data, repeat_probs, coefficients, 0, end)
+
+    return repeat_probs, coefficients
+
+
 def analyse_single_subject(subject_filtered_data, subject_ID, window_size, diff):
 
     repeat_probs = {
@@ -78,7 +87,7 @@ def analyse_single_subject(subject_filtered_data, subject_ID, window_size, diff)
     }
 
     repeat_probs, coefficients = analyse_trials(subject_filtered_data, repeat_probs, coefficients)
-    repeat_probs, coefficients = analyse_with_moving_window(subject_filtered_data, window_size, diff, repeat_probs, coefficients)
+    repeat_probs, coefficients = analyse_with_growing_window(subject_filtered_data, repeat_probs, coefficients, diff)
 
     return repeat_probs, coefficients
 
