@@ -65,12 +65,26 @@ def plot_window_repeat_probs(repeat_probs, window_size, diff, subject_ID):
     plt.show()
 
 
+def fill_the_wholes(x_labels, coefficients, model_label, coeff_name, main_y):
+
+    for x_label in x_labels:
+        if x_label not in coefficients[model_label]:
+            coefficients[model_label][x_label] = {}
+        if coeff_name not in coefficients[model_label][x_label]:
+            coefficients[model_label][x_label][coeff_name] = main_y
+
+    return coefficients
+
+
 def plot_subject_single_coef(coefficients, x_labels, axs, model_label, coeff_name):
 
     xs = [i for i, _ in enumerate(x_labels)]
+    main_y = [coefficients[model_label][(0, N_TRIALS)][coeff_name] for x in xs]
+
+    coefficients = fill_the_wholes(x_labels, coefficients, model_label, coeff_name, main_y[0])
+
     ys = [coefficients[model_label][x_label][coeff_name] for x_label in x_labels]
     axs.plot(xs, ys, label='window\'s coefficient')
-    main_y = [coefficients[model_label][(0, N_TRIALS)][coeff_name] for y in ys]
     axs.plot(xs, main_y, label='final coefficient')
     axs.set_xticks(range(len(xs)))
     axs.set_xticklabels(x_labels, rotation=45)

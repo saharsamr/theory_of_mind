@@ -24,7 +24,7 @@ def print_windows_ttest_results(t_test_results, window_size, diff, growing_windo
             field_names, statistic, pvalue = [''], ['statistic'], ['pvalue']
             print('***********************************{}: {}'.format(model_key.replace('_', '-'), coef.replace('_', ' ')))
             if growing_window:
-                for end in range(60, N_TRIALS, 2*diff):
+                for end in range(50, N_TRIALS, diff):
                     stats = t_test_results[model_key][coef][(0, end)]
                     field_names.append((0, end))
                     statistic.append(int(stats['statistic']*1000)/1000)

@@ -1,4 +1,4 @@
-from analysis.num_of_trials.extract_info import extract_subject_trials_info
+from analysis.num_of_trials.extract_info import extract_subject_trials_info, get_bad_trial_indices
 from analysis.num_of_trials.glmfit import fit_binomial_glm
 from analysis.num_of_trials.print_results import print_glm_results
 
@@ -12,13 +12,20 @@ def analyse_trials(subject_filtered_data, repeat_probs, coefficients, start_inde
 
     model_free_data, model_based_data = extract_subject_trials_info(subject_filtered_data, start_index)
 
+    bad_mb_indices = get_bad_trial_indices(model_based_data)
+    model_based_data = model_based_data.drop(bad_mb_indices)
+    model_based_data.reset_index(drop=True, inplace=True)
+
     repeat_mf_probs = calc_repeat_probs_MF(model_free_data)
     repeat_mb_probs = calc_repeat_probs_MB(model_based_data)
     repeat_probs['model_free'][(start_index, end_index)] = repeat_mf_probs
     repeat_probs['model_based'][(start_index, end_index)] = repeat_mb_probs
 
-    mf_model, mf_result = fit_binomial_glm(model_free_data, formula='repeat ~ common_reward*unique_reward')
-    mb_model, mb_result = fit_binomial_glm(model_based_data, formula='repeat ~ common_reward*reward_prob')
+    mf_model, mf_result, mb_model, mb_result = None, None, None, None
+    if len(model_free_data):
+        mf_model, mf_result = fit_binomial_glm(model_free_data, formula='repeat ~ common_reward*unique_reward')
+    if len(model_based_data):
+        mb_model, mb_result = fit_binomial_glm(model_based_data, formula='repeat ~ common_reward*reward_prob')
 
     coefficients = add_coefficients(coefficients, mf_result, mb_result, start_index, end_index)
 
@@ -42,16 +49,18 @@ def get_trials_subset(subject_filtered_data, start_index, end_index):
 
 def add_coefficients(coefficients, mf_result, mb_result, start_index=0, end_index=N_TRIALS):
 
-    coefficients['model_free'][(start_index, end_index)] = {
-        'common_reward': mf_result.params.get('common_reward[T.True]'),
-        'unique_reward': mf_result.params.get('unique_reward[T.True]'),
-        'interaction': mf_result.params.get('common_reward[T.True]:unique_reward[T.True]')
-    }
-    coefficients['model_based'][(start_index, end_index)] = {
-        'common_reward': mb_result.params.get('common_reward[T.True]'),
-        'reward_prob': mb_result.params.get('reward_prob'),
-        'interaction': mb_result.params.get('common_reward[T.True]:reward_prob')
-    }
+    if mf_result:
+        coefficients['model_free'][(start_index, end_index)] = {
+            'common_reward': mf_result.params.get('common_reward[T.True]'),
+            'unique_reward': mf_result.params.get('unique_reward[T.True]'),
+            'interaction': mf_result.params.get('common_reward[T.True]:unique_reward[T.True]')
+        }
+    if mb_result:
+        coefficients['model_based'][(start_index, end_index)] = {
+            'common_reward': mb_result.params.get('common_reward[T.True]'),
+            'reward_prob': mb_result.params.get('reward_prob'),
+            'interaction': mb_result.params.get('common_reward[T.True]:reward_prob')
+        }
 
     return coefficients
 

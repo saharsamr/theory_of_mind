@@ -89,3 +89,19 @@ def extract_subject_trials_info(filtered_data, start_index):
                     model_based_data, choice, next_trial_options, next_choice, outcome, pic_rewards, reward_prob)
 
     return pd.DataFrame(model_free_data), pd.DataFrame(model_based_data)
+
+
+def get_bad_trial_indices(model_based_data):
+
+    new_data = model_based_data
+    new_data['reward_prob'] = [int(reward_prob*100/5)*5/100 for reward_prob in model_based_data['reward_prob']]
+    groups = new_data.groupby(by=['reward_prob', 'common_reward'])
+
+    indices = []
+    for key, group in groups:
+        different_states_num = len(np.unique(group['repeat']))
+        if different_states_num != 2:
+            for index in group.index:
+                indices.append(index)
+
+    return indices
