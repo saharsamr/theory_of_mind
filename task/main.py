@@ -10,3 +10,5 @@ def main():
 
     subject_info = presenter.present_info_box()
     SubjectParams.set_subject_info(subject_info)
+
+    presenter.present_instructions('task_description')

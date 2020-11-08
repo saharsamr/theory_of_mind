@@ -11,12 +11,14 @@ class SubjectParams:
     subject_age = None
     subject_gender = None
 
+
     @classmethod
     def set_subject_info(cls, subject_info):
 
         cls.subject_id = cls._find_new_subject_id_()
         cls.subject_age = subject_info['age']
         cls.subject_gender = subject_info['gender']
+
 
     @staticmethod
     def _find_new_subject_id_():
