@@ -1,9 +1,24 @@
 from task.params.task_params import TaskParams
 
 import random
+from collections import defaultdict
 
 
 class TaskLogics:
+
+    @staticmethod
+    def assign_objects_to_options():
+
+    objects_of_options = [[], [], [], []]
+    objects_temp = [ob for ob in TaskParams.objects]
+    random.shuffle(objects_temp)
+
+    for i, (object, pair) in enumerate(zip(objects_temp, TaskParams.options_pairs)):
+        for option in pair:
+            objects_of_options[option].append(object)
+
+    TaskParams.set_objects_of_options(objects_of_options)
+
 
     @staticmethod
     def pair_options():
