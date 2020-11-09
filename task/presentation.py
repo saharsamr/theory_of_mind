@@ -4,7 +4,7 @@ from task.interactions import Interaction
 
 from psychopy import visual, core, gui, event
 
-from time import sleep
+from time import sleep, time
 
 
 class PresentationClass:
@@ -65,8 +65,10 @@ class PresentationClass:
 
     def present_training_step(self, option, objects):
 
+        start, reaction_time = time(), 0
         self.draw_image(TaskParams.image_dir+str(option)+'.jpg', pos=[0, 550], size=[300, 500])
         if Interaction.ready_to_present_option_objects():
+            reaction_time = time() - start
             sleep(TaskParams.lag_to_response)
 
         self.draw_multiple_images(
@@ -84,3 +86,5 @@ class PresentationClass:
 
         self.draw_image(TaskParams.image_dir+'gray.png')
         sleep(0.25)
+
+        return reaction_time

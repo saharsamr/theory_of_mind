@@ -9,6 +9,7 @@ class Trainer:
     num_of_training_repeat = [12, 4, 2]
     training_options_order = []
     objects_presentation_order = []
+    presentation_response_times = []
 
 
     @classmethod
@@ -40,7 +41,11 @@ class Trainer:
 
         passed, round = False, 0
         while not passed:
+            round_presentation_response_times = []
             cls.set_training_options_order(round)
             cls.set_objects_presentation_order(round)
             for option, objects in zip(cls.training_options_order[round], cls.objects_presentation_order[round]):
-                presenter.present_training_step(option, objects)
+                reaction_time = presenter.present_training_step(option, objects)
+                round_presentation_response_times.append(reaction_time)
+
+            cls.presentation_response_times.append(round_response_times)
