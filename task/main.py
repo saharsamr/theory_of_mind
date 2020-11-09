@@ -1,6 +1,7 @@
 from task.presentation import PresentationClass
 from task.params.subject_params import SubjectParams
 from task.task import Task
+from task.trainer import Trainer
 
 from psychopy import gui, core
 
@@ -13,5 +14,6 @@ def main():
     SubjectParams.set_subject_info(subject_info)
 
     Task.initialize()
+    Trainer.start_training(presenter)
 
     presenter.present_instructions('task_description')

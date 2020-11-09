@@ -1,3 +1,6 @@
+from psychopy import event
+
+
 class Interaction:
 
     @staticmethod
@@ -11,3 +14,10 @@ class Interaction:
             return ['space', 'right']
         else:
             return ['right', 'left']
+
+
+    @staticmethod
+    def ready_to_present_option_objects():
+
+        keys = event.waitKeys(keyList=['space'])
+        return True

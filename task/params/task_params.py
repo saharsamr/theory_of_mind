@@ -11,6 +11,9 @@ class TaskParams:
     options_pairs = None
     objects_of_options = None
 
+    lag_to_response = 0.5
+    object_presentation_time_in_training = 1.0
+
 
     @classmethod
     def set_options_pairs(cls, pairs):

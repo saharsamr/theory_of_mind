@@ -4,6 +4,8 @@ from task.interactions import Interaction
 
 from psychopy import visual, core, gui, event
 
+from time import sleep
+
 
 class PresentationClass:
 
@@ -25,10 +27,19 @@ class PresentationClass:
         return None
 
 
-    def draw_image(self, image_path):
+    def draw_image(self, image_path, pos=[0, 0], size=None):
 
-        image = visual.ImageStim(self.screen, image_path)
+        image = visual.ImageStim(self.screen, image_path, pos=pos, size=size)
         image.draw()
+        self.screen.flip()
+
+
+    def draw_multiple_images(self, images_path, poses, sizes):
+
+        for path, pos, size in zip(images_path, poses, sizes):
+            image = visual.ImageStim(self.screen, path, pos=pos, size=size)
+            image.draw()
+
         self.screen.flip()
 
 
@@ -50,3 +61,26 @@ class PresentationClass:
 
             if keys[0] == 'space':
                 break
+
+
+    def present_training_step(self, option, objects):
+
+        self.draw_image(TaskParams.image_dir+str(option)+'.jpg', pos=[0, 550], size=[300, 500])
+        if Interaction.ready_to_present_option_objects():
+            sleep(TaskParams.lag_to_response)
+
+        self.draw_multiple_images(
+            ['{}{}.jpg'.format(TaskParams.image_dir, objects[0]), '{}{}.jpg'.format(TaskParams.image_dir, option)],
+            [[0, 0], [0, 550]], [[600, 400], [300, 500]]
+        )
+        sleep(TaskParams.object_presentation_time_in_training)
+
+
+        self.draw_multiple_images(
+            ['{}{}.jpg'.format(TaskParams.image_dir, objects[1]), '{}{}.jpg'.format(TaskParams.image_dir, option)],
+            [[0, 0], [0, 550]], [[600, 400], [300, 500]]
+        )
+        sleep(TaskParams.object_presentation_time_in_training)
+
+        self.draw_image(TaskParams.image_dir+'gray.png')
+        sleep(0.25)
