@@ -37,15 +37,23 @@ class Trainer:
 
 
     @classmethod
+    def training_presentation_phase(cls, round, presenter):
+
+        round_presentation_response_times = []
+        for option, objects in zip(cls.training_options_order[round], cls.objects_presentation_order[round]):
+            reaction_time = presenter.present_training_step(option, objects)
+            round_presentation_response_times.append(reaction_time)
+
+        return round_presentation_response_times
+
+
+    @classmethod
     def start_training(cls, presenter):
 
         passed, round = False, 0
         while not passed:
-            round_presentation_response_times = []
             cls.set_training_options_order(round)
             cls.set_objects_presentation_order(round)
-            for option, objects in zip(cls.training_options_order[round], cls.objects_presentation_order[round]):
-                reaction_time = presenter.present_training_step(option, objects)
-                round_presentation_response_times.append(reaction_time)
+            round_presentation_response_times = cls.training_presentation_phase(round, presenter)
 
             cls.presentation_response_times.append(round_response_times)
