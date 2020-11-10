@@ -13,6 +13,7 @@ class TaskParams:
 
     lag_to_response = 0.5
     object_presentation_time_in_training = 1.0
+    time_limit_for_quiz = 3.0
 
 
     @classmethod

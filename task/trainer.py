@@ -154,6 +154,25 @@ class Trainer:
 
 
     @classmethod
+    def check_quiz_passing(cls):
+
+        last_phase1_responses = cls.quiz_phase1_responses[-1]
+        last_phase2_responses = cls.quiz_phase2_responses[-1]
+        last_phase1_response_times = cls.quiz_phase1_response_times[-1]
+        last_phase2_response_times = cls.quiz_phase2_response_times[-1]
+
+        all_correct, all_fast = True, True
+        if 0 in last_phase1_responses or 0 in last_phase2_responses:
+            all_correct = False
+        if not all(rt <= TaskParams.time_limit_for_quiz for rt in last_phase1_response_times)
+            or not all(rt <= TaskParams.time_limit_for_quiz for rt in last_phase2_response_times):
+            all_fast = False
+
+        passed = all_correct and all_fast
+        return passed, all_correct, all_fast
+
+
+    @classmethod
     def start_training(cls, presenter):
 
         passed, round = False, 0
@@ -163,3 +182,4 @@ class Trainer:
             cls.training_presentation_phase(round, presenter)
             cls.training_quiz_phase1(presenter, round)
             cls.training_quiz_phase2(presenter, round)
+            passed, all_correct, all_fast = cls.check_quiz_passing()
