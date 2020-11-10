@@ -10,12 +10,16 @@ class Trainer:
     training_options_order = []
     objects_presentation_order = []
     presentation_response_times = []
-    
+
     num_of_quiz_repeat = 2
     objects_of_quiz_phase1 = []
     options_of_quiz_phase1 = []
     quiz_phase1_responses = []
     quiz_phase1_response_times = []
+    objects_of_quiz_phase2 = []
+    options_of_quiz_phase2 = []
+    quiz_phase2_responses = []
+    quiz_phase2_response_times = []
 
 
     @classmethod
@@ -71,6 +75,34 @@ class Trainer:
 
 
     @classmethod
+    def set_objects_of_quiz_phase2(cls):
+
+        round_objects = []
+        for i in range(cls.num_of_quiz_repeat):
+            round_objects.extend(TaskParams.objects)
+        random.shuffle(round_objects)
+
+        cls.objects_of_quiz_phase2.append(round_objects)
+
+
+    @classmethod
+    def set_options_of_quiz_phase2(cls, round):
+
+        round_options = []
+        for object in cls.objects_of_quiz_phase2[round]:
+            selected_options = []
+            related_options = [op for op in TaskParams.first_options if object in TaskParams.objects_of_options[op]]
+            selected_options.append(random.choice(related_options))
+            selected_options.append(
+                random.choice([op for op in TaskParams.first_options if op not in related_options])
+            )
+            random.shuffle(selected_options)
+            round_options.append(selected_options)
+
+        cls.options_of_quiz_phase2.append(round_options)
+
+
+    @classmethod
     def training_presentation_phase(cls, round, presenter):
 
         round_presentation_response_times = []
@@ -102,6 +134,26 @@ class Trainer:
 
 
     @classmethod
+    def training_quiz_phase2(cls, presenter, round):
+
+        cls.set_objects_of_quiz_phase2()
+        cls.set_options_of_quiz_phase2(round)
+
+        round_responses, round_response_times = [], []
+        for object, options in zip(cls.objects_of_quiz_phase2[round], cls.options_of_quiz_phase2[round]):
+
+            key, response_time = presenter.present_quiz_phase2_question(object, options)
+            if object in TaskParams.objects_of_options[options[0]]:
+                round_responses.append(1 if key == 'left' else 0)
+            elif object in TaskParams.objects_of_options[options[1]]:
+                round_responses.append(1 if key == 'right' else 0)
+            round_response_times.append(response_time)
+
+        cls.quiz_phase2_responses.append(round_responses)
+        cls.quiz_phase2_response_times.append(round_response_times)
+
+
+    @classmethod
     def start_training(cls, presenter):
 
         passed, round = False, 0
@@ -110,3 +162,4 @@ class Trainer:
             cls.set_objects_presentation_order(round)
             cls.training_presentation_phase(round, presenter)
             cls.training_quiz_phase1(presenter, round)
+            cls.training_quiz_phase2(presenter, round)

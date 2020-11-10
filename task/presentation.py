@@ -106,3 +106,21 @@ class PresentationClass:
         reaction_time = time() - start
 
         return key, reaction_time
+
+
+    def present_quiz_phase2_question(self, object, options):
+
+        start, reaction_time = time(), 0
+        self.draw_multiple_images(
+            [
+                '{}{}.jpg'.format(TaskParams.image_dir, object),
+                '{}{}.jpg'.format(TaskParams.image_dir, options[0]),
+                '{}{}.jpg'.format(TaskParams.image_dir, options[1])
+            ],
+            [[0,0], [-550, 0], [550, 0]], [[700, 500], [300, 500], [300, 500]]
+        )
+
+        key = Interaction.quiz_answer()
+        reaction_time = time() - start
+
+        return key, reaction_time
