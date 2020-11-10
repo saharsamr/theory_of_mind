@@ -21,3 +21,10 @@ class Interaction:
 
         keys = event.waitKeys(keyList=['space'])
         return True
+
+
+    @staticmethod
+    def quiz_answer():
+
+        key = event.waitKeys(keyList=['left', 'right'])[0]
+        return key

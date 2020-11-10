@@ -73,14 +73,14 @@ class PresentationClass:
 
         self.draw_multiple_images(
             ['{}{}.jpg'.format(TaskParams.image_dir, objects[0]), '{}{}.jpg'.format(TaskParams.image_dir, option)],
-            [[0, 0], [0, 550]], [[600, 400], [300, 500]]
+            [[0, 0], [0, 550]], [[700, 500], [300, 500]]
         )
         sleep(TaskParams.object_presentation_time_in_training)
 
 
         self.draw_multiple_images(
             ['{}{}.jpg'.format(TaskParams.image_dir, objects[1]), '{}{}.jpg'.format(TaskParams.image_dir, option)],
-            [[0, 0], [0, 550]], [[600, 400], [300, 500]]
+            [[0, 0], [0, 550]], [[700, 500], [300, 500]]
         )
         sleep(TaskParams.object_presentation_time_in_training)
 
@@ -88,3 +88,21 @@ class PresentationClass:
         sleep(0.25)
 
         return reaction_time
+
+
+    def present_quiz_phase1_question(self, option, objects):
+
+        start, reaction_time = time(), 0
+        self.draw_multiple_images(
+            [
+                '{}{}.jpg'.format(TaskParams.image_dir, option),
+                '{}{}.jpg'.format(TaskParams.image_dir, objects[0]),
+                '{}{}.jpg'.format(TaskParams.image_dir, objects[1])
+            ],
+            [[0,0], [-550, 0], [550, 0]], [[300, 500], [700, 500], [700, 500]]
+        )
+
+        key = Interaction.quiz_answer()
+        reaction_time = time() - start
+
+        return key, reaction_time
