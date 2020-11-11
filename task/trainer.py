@@ -164,7 +164,7 @@ class Trainer:
         all_correct, all_fast = True, True
         if 0 in last_phase1_responses or 0 in last_phase2_responses:
             all_correct = False
-        if not all(rt <= TaskParams.time_limit_for_quiz for rt in last_phase1_response_times)
+        if not all(rt <= TaskParams.time_limit_for_quiz for rt in last_phase1_response_times)\
             or not all(rt <= TaskParams.time_limit_for_quiz for rt in last_phase2_response_times):
             all_fast = False
 
