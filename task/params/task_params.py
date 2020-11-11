@@ -1,3 +1,6 @@
+import random
+
+
 class TaskParams:
 
     data_dir = 'task/data/'
@@ -14,6 +17,10 @@ class TaskParams:
     lag_to_response = 0.5
     object_presentation_time_in_training = 1.0
     time_limit_for_quiz = 3.0
+
+    num_of_blocks = 5
+    num_of_block_trials = 60
+    n_trials = 5 * 60
 
 
     @classmethod
