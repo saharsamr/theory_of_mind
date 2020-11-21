@@ -17,6 +17,8 @@ class TaskParams:
     lag_to_response = 0.5
     object_presentation_time_in_training = 1.0
     time_limit_for_quiz = 3.0
+    feedback_duration = 1.0
+    clear_after_feedback = 0.1
 
     num_of_blocks = 5
     num_of_block_trials = 60

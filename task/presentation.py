@@ -27,20 +27,56 @@ class PresentationClass:
         return None
 
 
-    def draw_image(self, image_path, pos=[0, 0], size=None):
+    def draw_image(self, image_path, pos=[0, 0], size=None, flip=True):
 
         image = visual.ImageStim(self.screen, image_path, pos=pos, size=size)
         image.draw()
-        self.screen.flip()
+        if flip:
+            self.screen.flip()
 
 
-    def draw_multiple_images(self, images_path, poses, sizes):
+    def draw_multiple_images(self, images_path, poses, sizes, flip=True):
 
         for path, pos, size in zip(images_path, poses, sizes):
             image = visual.ImageStim(self.screen, path, pos=pos, size=size)
             image.draw()
+        if flip:
+            self.screen.flip()
 
-        self.screen.flip()
+
+    def present_trial(self, options, objects, rewards):
+
+        start, reaction_time = time(), 0
+        self.draw_multiple_images(
+            ['{}{}.jpg'.format(TaskParams.image_dir, options[0]), '{}{}.jpg'.format(TaskParams.image_dir, options[1])],
+            [[-200, 0], [200, 0]], [[300, 500], [300, 500]]
+        )
+        key = Interaction.option_select()
+        reaction_time = time() - start
+
+        index = 0 if key == 'left' else 1
+        self.present_objects_rewards(options[index], objects[index], rewards[index])
+
+        return key, reaction_time
+
+
+    def present_objects_rewards(self, option, objects, rewards):
+
+        self.draw_image('{}gray.png'.format(TaskParams.image_dir))
+        sleep(TaskParams.lag_to_response)
+        for object, reward in zip(objects, rewards):
+            self.draw_multiple_images(
+                [
+                    '{}{}.jpg'.format(TaskParams.image_dir, option),
+                    '{}{}.png'.format(TaskParams.image_dir, object),
+                    '{}{}.png'.format(TaskParams.image_dir, 'reward' if reward else 'box')
+                ],
+                [[0, 100], [-300, -300], [300, -300]], [[200, 300], [500, 300], [500, 300]]
+            )
+            sleep(TaskParams.feedback_duration)
+            self.draw_image('{}gray.png'.format(TaskParams.image_dir), flip=False)
+            self.draw_image('{}{}.jpg'.format(TaskParams.image_dir, option), size=[200, 300], pos=[0, 100])
+            sleep(TaskParams.clear_after_feedback)
 
 
     def present_instructions(self, related_phase):

@@ -28,3 +28,10 @@ class Interaction:
 
         key = event.waitKeys(keyList=['left', 'right'])[0]
         return key
+
+
+    @staticmethod
+    def option_select():
+
+        key = event.waitKeys(keyList=['left', 'right'])[0]
+        return key
