@@ -64,18 +64,23 @@ class PresentationClass:
 
         self.draw_image('{}gray.png'.format(TaskParams.image_dir))
         sleep(TaskParams.lag_to_response)
-        for object, reward in zip(objects, rewards):
+        for i, (object, reward) in enumerate(zip(objects, rewards)):
             self.draw_multiple_images(
                 [
                     '{}{}.jpg'.format(TaskParams.image_dir, option),
-                    '{}{}.png'.format(TaskParams.image_dir, object),
+                    '{}{}.jpg'.format(TaskParams.image_dir, object),
                     '{}{}.png'.format(TaskParams.image_dir, 'reward' if reward else 'box')
                 ],
                 [[0, 100], [-300, -300], [300, -300]], [[200, 300], [500, 300], [500, 300]]
             )
             sleep(TaskParams.feedback_duration)
-            self.draw_image('{}gray.png'.format(TaskParams.image_dir), flip=False)
-            self.draw_image('{}{}.jpg'.format(TaskParams.image_dir, option), size=[200, 300], pos=[0, 100])
+            
+            if i == 0:
+                self.draw_image('{}gray.png'.format(TaskParams.image_dir), flip=False)
+                self.draw_image('{}{}.jpg'.format(TaskParams.image_dir, option), size=[200, 300], pos=[0, 100])
+            else:
+                self.draw_image('{}gray.png'.format(TaskParams.image_dir))
+
             sleep(TaskParams.clear_after_feedback)
 
 

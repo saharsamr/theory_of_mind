@@ -15,5 +15,6 @@ def main():
 
     Task.initialize()
     Trainer.start_training(presenter)
+    Task.start_task(presenter)
 
     presenter.present_instructions('task_description')

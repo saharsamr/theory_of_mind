@@ -26,7 +26,33 @@ class TaskLogics:
             same_order = random.choice([0, 1])
             trials_pairs[i] = tuple(trials_pairs[i]) if same_order else (trials_pairs[i][1], trials_pairs[i][0])
 
-        TrialsInfo.set_trials_pairs(np.reshape(trials_pairs, (5, 60, 2)))
+        TrialsInfo.set_trials_pairs(
+            np.reshape(trials_pairs, (TaskParams.num_of_blocks, TaskParams.num_of_block_trials, 2))
+        )
+
+
+    @staticmethod
+    def save_tirals_properties(selected_keys, reaction_times):
+
+        selected_options, visited_objects, rewards = [], [], []
+        for block in range(TaskParams.num_of_blocks):
+            block_selected_option, block_visited_objects, block_rewards = [], [], []
+            for t_index, key in zip(range(TaskParams.num_of_block_trials), selected_keys[block]):
+
+                option_index = 0 if key == 'left' else 1
+                selected_option = TrialsInfo.trials_pairs[block][t_index][option_index]
+                block_selected_option.append(selected_option)
+                block_visited_objects.append(TrialsInfo.trials_availables_objects[block][t_index][option_index])
+                block_rewards.append(TrialsInfo.available_objects_actual_rewards[block][t_index][option_index])
+
+            selected_options.append(block_selected_option)
+            visited_objects.append(block_visited_objects)
+            rewards.append(block_rewards)
+
+        TrialsInfo.set_subjects_selection(selected_options)
+        TrialsInfo.set_visited_objects(visited_objects)
+        TrialsInfo.set_gained_rewards(rewards)
+        TrialsInfo.set_selection_reaction_times(reaction_times)
 
 
     @staticmethod

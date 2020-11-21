@@ -13,6 +13,7 @@ class TrialsInfo:
     subject_selected_options = []
     visited_objects = []
     objects_gained_rewards = []
+    selection_reaction_times = []
 
 
     @classmethod
@@ -49,3 +50,27 @@ class TrialsInfo:
     def set_generated_randoms_for_rewards(cls, randoms):
 
         cls.generated_randoms_for_rewards = randoms
+
+
+    @classmethod
+    def set_subjects_selection(cls, selections):
+
+        cls.subject_selected_options = selections
+
+
+    @classmethod
+    def set_visited_objects(cls, objects):
+
+        cls.visited_objects = objects
+
+
+    @classmethod
+    def set_gained_rewards(cls, rewards):
+
+        cls.objects_gained_rewards = rewards
+
+
+    @classmethod
+    def set_selection_reaction_times(cls, reaction_times):
+
+        cls.selection_reaction_times = reaction_times
