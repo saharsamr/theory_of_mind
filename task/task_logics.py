@@ -49,6 +49,84 @@ class TaskLogics:
 
 
     @staticmethod
+    def set_objects_reward_probs_by_random_walk():
+
+        objects_reward_probs = []
+        for block in range(TaskParams.num_of_blocks):
+            block_rewards, init_probs = [], copy.deepcopy(TaskParams.init_block_probs)
+            random.shuffle(init_probs)
+            for i in range(TaskParams.num_of_block_trials):
+                block_rewards.append(
+                    np.array(init_probs) if i == 0 else TaskLogics._rewards_random_walk(block_rewards[i-1])
+                )
+
+            objects_reward_probs.append(block_rewards)
+
+        TrialsInfo.set_objects_reward_probs(objects_reward_probs)
+
+
+    @staticmethod
+    def store_trials_available_objects_reward_prob():
+
+        all_trials_probs = []
+        for block in range(TaskParams.num_of_blocks):
+            block_trials_reward_probs = []
+            for trial_objects, objects_reward_probs in zip(\
+                TrialsInfo.trials_availables_objects[block], TrialsInfo.objects_reward_probs_during_trials[block]\
+            ):
+                objects1, objects2 = trial_objects
+                trial_rewards_probs = [
+                    (objects_reward_probs[objects1[0]%10], objects_reward_probs[objects1[1]%10]),
+                    (objects_reward_probs[objects2[0]%10], objects_reward_probs[objects2[1]%10])
+                ]
+                block_trials_reward_probs.append(trial_rewards_probs)
+            all_trials_probs.append(block_trials_reward_probs)
+
+        TrialsInfo.set_available_objects_reward_probs(all_trials_probs)
+
+
+    @staticmethod
+    def set_objects_actual_rewards():
+
+        generated_randoms, actual_rewards = [], []
+        for block in range(TaskParams.num_of_blocks):
+            block_randoms, block_rewards = [], []
+            for objects_rewards_probs in TrialsInfo.trials_availables_objects_reward_probs[block]:
+                temp_radoms, temp_rewards = [], []
+                for object_set in objects_rewards_probs:
+                    randoms = (random.random(), random.random())
+                    rewards = (randoms[0] < object_set[0], randoms[1] < object_set[1])
+                    temp_radoms.append(randoms)
+                    temp_rewards.append(rewards)
+
+                block_randoms.append(temp_radoms)
+                block_rewards.append(temp_rewards)
+
+            generated_randoms.append(block_randoms)
+            actual_rewards.append(block_rewards)
+
+        TrialsInfo.set_generated_randoms_for_rewards(generated_randoms)
+        TrialsInfo.set_objects_actual_rewards(actual_rewards)
+
+
+    @staticmethod
+    def _rewards_random_walk(init_probs):
+
+        delta_values = TaskParams.reward_prob_std * np.random.normal(size=init_probs.shape)
+        new_reward_probs = init_probs + delta_values
+        bool_ = False
+        for i, reward in enumerate(new_reward_probs):
+            if reward > TaskParams.max_reward_prob:
+                bool_ = True
+                new_reward_probs[i] = TaskParams.max_reward_prob - (reward - TaskParams.max_reward_prob)
+            elif reward < TaskParams.min_reward_prob:
+                bool_ = True
+                new_reward_probs[i] = TaskParams.min_reward_prob + (TaskParams.min_reward_prob - reward)
+
+        return new_reward_probs
+
+
+    @staticmethod
     def _find_first_two_pairs(task_option_pairs_copy):
 
         selected_pairs = [task_option_pairs_copy[0]]

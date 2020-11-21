@@ -22,6 +22,11 @@ class TaskParams:
     num_of_block_trials = 60
     n_trials = 5 * 60
 
+    init_block_probs = [0.2, 0.4, 0.6, 0.8]
+    reward_prob_std = 0.03
+    max_reward_prob = 0.8
+    min_reward_prob = 0.2
+
 
     @classmethod
     def set_options_pairs(cls, pairs):
