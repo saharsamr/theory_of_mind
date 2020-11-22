@@ -44,14 +44,18 @@ class PresentationClass:
             self.screen.flip()
 
 
-    def present_trial(self, options, objects, rewards):
+    def present_trial(self, options, objects, rewards, time_limit=float('inf')):
 
         start, reaction_time = time(), 0
         self.draw_multiple_images(
             ['{}{}.jpg'.format(TaskParams.image_dir, options[0]), '{}{}.jpg'.format(TaskParams.image_dir, options[1])],
             [[-200, 0], [200, 0]], [[300, 500], [300, 500]]
         )
-        key = Interaction.option_select()
+        key = Interaction.option_select(time_limit)
+        if not key:
+            # draw the faster.jpg
+            return key, float('inf')
+
         reaction_time = time() - start
 
         index = 0 if key == 'left' else 1

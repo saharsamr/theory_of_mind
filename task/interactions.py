@@ -31,7 +31,9 @@ class Interaction:
 
 
     @staticmethod
-    def option_select():
+    def option_select(time_limit):
 
-        key = event.waitKeys(keyList=['left', 'right'])[0]
+        key = event.waitKeys(keyList=['left', 'right'], maxWait=time_limit)
+        if key:
+            return key[0]
         return key
