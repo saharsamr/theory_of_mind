@@ -16,6 +16,23 @@ class Task:
         TaskLogics.store_trials_available_objects_reward_prob()
         TaskLogics.set_objects_actual_rewards()
 
+        TaskLogics.manage_warmup_trials()
+        TaskLogics.set_rewards_for_warmup()
+
+
+    @staticmethod
+    def run_warm_up_block(presenter):
+
+        warmup_selected, warmup_reaction_times = Task.run_trials_block(
+            presenter, TaskParams.n_warm_up_trials,
+            TrialsInfo.warmup_trials_pairs,
+            TrialsInfo.warmup_available_objects,
+            TrialsInfo.warmup_objects_actual_rewards,
+        )
+
+        TaskLogics.save_warmup_results(warmup_selected, warmup_reaction_times)
+
+
 
     @staticmethod
     def start_task(presenter):
@@ -34,7 +51,7 @@ class Task:
             selecteds.append(block_selected)
             reaction_times.append(block_reaction_time)
 
-        TaskLogics.save_tirals_properties(selecteds, reaction_times)
+        TaskLogics.save_tirals_results(selecteds, reaction_times)
 
 
     @staticmethod

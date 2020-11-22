@@ -21,6 +21,7 @@ class TaskParams:
     clear_after_feedback = 0.1
     time_limit_for_selection = 2.0
 
+    n_warm_up_trials = 8
     num_of_blocks = 5
     num_of_block_trials = 60
     n_trials = 5 * 60

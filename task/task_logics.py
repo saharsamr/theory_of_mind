@@ -32,18 +32,53 @@ class TaskLogics:
 
 
     @staticmethod
-    def save_tirals_properties(selected_keys, reaction_times):
+    def manage_warmup_trials():
+
+        not_finished = lambda sampled, selected: len(sampled) + len(selected) < TaskParams.n_warm_up_trials
+
+        selected_indices = [0, 1, 2, 3]
+        random.shuffle(selected_indices)
+        sampled_indices, visited_options = [], []
+        while not_finished(sampled_indices, selected_indices):
+            for ind, trial_pair in enumerate(TrialsInfo.trials_pairs[0]):
+                if ind >= len(selected_indices) and not_finished(sampled_indices, selected_indices):
+                    if (str(trial_pair) not in visited_options) and (random.random() < 0.1):
+                        sampled_indices.append(ind)
+                        visited_options.append(str(trial_pair))
+                elif not not_finished(sampled_indices, selected_indices):
+                    break
+        random.shuffle(sampled_indices)
+
+        selected_indices.extend(sampled_indices)
+        TrialsInfo.sample_for_warmup(selected_indices)
+
+
+    @staticmethod
+    def set_rewards_for_warmup():
+
+        generated_randoms, actual_rewards = [], []
+        for pair_probs in TrialsInfo.warmup_reward_probs:
+
+            pair_random = [(random.random(), random.random()) for _ in pair_probs]
+            pair_reward = [(rand[0] < prob[0], rand[1] < prob[1]) for rand, prob in zip(pair_random, pair_probs)]
+            generated_randoms.append(generated_randoms)
+            actual_rewards.append(pair_reward)
+
+        TrialsInfo.set_rewards_for_warmup(generated_randoms, actual_rewards)
+
+
+    @staticmethod
+    def save_tirals_results(selected_keys, reaction_times):
 
         selected_options, visited_objects, rewards = [], [], []
         for block in range(TaskParams.num_of_blocks):
-            block_selected_option, block_visited_objects, block_rewards = [], [], []
-            for t_index, key in zip(range(TaskParams.num_of_block_trials), selected_keys[block]):
-
-                option_index = 0 if key == 'left' else 1
-                selected_option = TrialsInfo.trials_pairs[block][t_index][option_index]
-                block_selected_option.append(selected_option)
-                block_visited_objects.append(TrialsInfo.trials_availables_objects[block][t_index][option_index])
-                block_rewards.append(TrialsInfo.available_objects_actual_rewards[block][t_index][option_index])
+            block_selected_option, block_visited_objects, block_rewards = \
+                TaskLogics.block_trials_results(
+                    selected_keys[block],
+                    TrialsInfo.trials_pairs[block],
+                    TrialsInfo.trials_availables_objects[block],
+                    TrialsInfo.available_objects_actual_rewards[block]
+                )
 
             selected_options.append(block_selected_option)
             visited_objects.append(block_visited_objects)
@@ -53,6 +88,43 @@ class TaskLogics:
         TrialsInfo.set_visited_objects(visited_objects)
         TrialsInfo.set_gained_rewards(rewards)
         TrialsInfo.set_selection_reaction_times(reaction_times)
+
+
+    @staticmethod
+    def save_warmup_results(selected_keys, reaction_times):
+
+        selected_options, visited_objects, rewards = \
+            TaskLogics.block_trials_results(
+                selected_keys,
+                TrialsInfo.warmup_trials_pairs,
+                TrialsInfo.warmup_available_objects,
+                TrialsInfo.warmup_objects_actual_rewards
+            )
+
+        TrialsInfo.set_warmup_selections(selected_options)
+        TrialsInfo.set_warmup_visited_objects(visited_objects)
+        TrialsInfo.set_warmup_gained_rewards(rewards)
+        TrialsInfo.set_warmup_reaction_times(reaction_times)
+
+
+    @staticmethod
+    def block_trials_results(selected_keys, trials_pairs, trials_objects, trials_rewards):
+
+        block_selected_option, block_visited_objects, block_rewards = [], [], []
+        for t_index, key in enumerate(selected_keys):
+
+            if key:
+                option_index = 0 if key == 'left' else 1
+                selected_option = trials_pairs[t_index][option_index]
+                block_selected_option.append(selected_option)
+                block_visited_objects.append(trials_objects[t_index][option_index])
+                block_rewards.append(trials_rewards[t_index][option_index])
+            else:
+                block_selected_option.append(None)
+                block_visited_objects.append(None)
+                block_rewards.append(None)
+
+        return block_selected_option, block_visited_objects, block_rewards
 
 
     @staticmethod

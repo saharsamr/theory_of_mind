@@ -15,6 +15,5 @@ def main():
 
     Task.initialize()
     Trainer.start_training(presenter)
+    Task.run_warm_up_block(presenter)
     Task.start_task(presenter)
-
-    presenter.present_instructions('task_description')
