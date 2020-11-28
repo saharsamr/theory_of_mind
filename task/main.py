@@ -2,6 +2,7 @@ from task.presentation import PresentationClass
 from task.params.subject_params import SubjectParams
 from task.task import Task
 from task.trainer import Trainer
+from task.agents.mf_agent import MFAgent
 
 from psychopy import gui, core
 
@@ -17,3 +18,6 @@ def main():
     Trainer.start_training(presenter)
     Task.run_warm_up_block(presenter)
     Task.start_task(presenter)
+    
+    MFAgent.initialize_qvalues()
+    MFAgent.start_agent_task()

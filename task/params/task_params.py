@@ -20,11 +20,17 @@ class TaskParams:
     feedback_duration = 1.0
     clear_after_feedback = 0.1
     time_limit_for_selection = 2.0
+    
+    min_time_for_agent_slection = 0.5
 
     n_warm_up_trials = 8
-    num_of_blocks = 5
+    num_of_blocks = 3
     num_of_block_trials = 60
-    n_trials = 5 * 60
+    n_trials = 3 * 60
+
+    n_agent_blocks = 3
+    n_agent_block_trials = 60
+    n_agent_trials = 3 * 60
 
     init_block_probs = [0.2, 0.4, 0.6, 0.8]
     reward_prob_std = 0.03
