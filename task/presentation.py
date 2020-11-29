@@ -64,6 +64,22 @@ class PresentationClass:
         return key, reaction_time
 
 
+    def present_agent_trial(self, options, selected, selected_objects, selected_rewards, time_limit=float('inf')):
+
+        start, reaction_time = time(), 0
+        self.draw_multiple_images(
+            ['{}{}.jpg'.format(TaskParams.image_dir, options[0]), '{}{}.jpg'.format(TaskParams.image_dir, options[1])],
+            [[-200, 0], [200, 0]], [[300, 500], [300, 500]]
+        )
+        key = Interaction.option_select(time_limit)
+
+        reaction_time = time() - start
+
+        self.present_objects_rewards(selected, selected_objects, selected_rewards)
+
+        return key, reaction_time
+
+
     def present_objects_rewards(self, option, objects, rewards):
 
         self.draw_image('{}gray.png'.format(TaskParams.image_dir))
@@ -78,7 +94,7 @@ class PresentationClass:
                 [[0, 100], [-300, -300], [300, -300]], [[200, 300], [500, 300], [500, 300]]
             )
             sleep(TaskParams.feedback_duration)
-            
+
             if i == 0:
                 self.draw_image('{}gray.png'.format(TaskParams.image_dir), flip=False)
                 self.draw_image('{}{}.jpg'.format(TaskParams.image_dir, option), size=[200, 300], pos=[0, 100])

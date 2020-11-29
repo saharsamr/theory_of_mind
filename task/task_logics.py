@@ -68,7 +68,7 @@ class TaskLogics:
 
 
     @staticmethod
-    def save_tirals_results(selected_keys, reaction_times):
+    def save_tirals_results(selected_keys, reaction_times, predictions=None):
 
         selected_options, visited_objects, rewards = [], [], []
         for block in range(TaskParams.num_of_blocks):
@@ -87,6 +87,16 @@ class TaskLogics:
         TrialsInfo.set_subjects_selection(selected_options)
         TrialsInfo.set_visited_objects(visited_objects)
         TrialsInfo.set_gained_rewards(rewards)
+        TrialsInfo.set_selection_reaction_times(reaction_times)
+
+
+    @staticmethod
+    def save_agent_trials_results(selected_options, visited_objects, gained_rewards, predictions, reaction_times):
+
+        TrialsInfo.set_subjects_selection(selected_options)
+        TrialsInfo.set_visited_objects(visited_objects)
+        TrialsInfo.set_gained_rewards(gained_rewards)
+        TrialsInfo.set_subject_predictions(predictions)
         TrialsInfo.set_selection_reaction_times(reaction_times)
 
 

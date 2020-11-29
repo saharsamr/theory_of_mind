@@ -18,6 +18,6 @@ def main():
     Trainer.start_training(presenter)
     Task.run_warm_up_block(presenter)
     Task.start_task(presenter)
-    
+
     MFAgent.initialize_qvalues()
-    MFAgent.start_agent_task()
+    MFAgent.start_agent_task(presenter)

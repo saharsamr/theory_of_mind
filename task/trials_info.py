@@ -20,6 +20,7 @@ class TrialsInfo:
     visited_objects = []
     objects_gained_rewards = []
     selection_reaction_times = []
+    subject_predictions = []
 
     warmup_subject_selections = []
     warmup_visited_objects = []
@@ -85,6 +86,11 @@ class TrialsInfo:
     def set_selection_reaction_times(cls, reaction_times):
 
         cls.selection_reaction_times = reaction_times
+
+    @classmethod
+    def set_subject_predictions(cls, predictions):
+
+        cls.subject_predictions = predictions
 
 
     @classmethod
