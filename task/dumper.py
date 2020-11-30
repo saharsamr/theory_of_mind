@@ -3,7 +3,7 @@ from task.params.task_params import TaskParams
 from task.params.subject_params import SubjectParams
 from task.trainer import Trainer
 
-import csv
+import json
 
 
 class Dumper:
@@ -11,34 +11,26 @@ class Dumper:
     @staticmethod
     def save_params(paht, file_name):
 
-        with open('{}{}.params'.format(path, file_name), mode='w') as param_file:
+        with open('{}{}.json'.format(path, file_name), mode='w') as param_file:
 
-            param_file.write('date:{}\n'.format(SubjectParams.subject_date))
-            param_file.write('subjectID:{}\n'.format(SubjectParams.subject_id))
-            param_file.write('age:{}\n'.format(SubjectParams.subject_age))
-            param_file.write('gender:{}\n'.format(SubjectParams.subject_gender))
+            params = {
+                'date': SubjectParams.subject_date,
+                'subjectID': SubjectParams.subject_id,
+                'age': SubjectParams.subject_age,
+                'gender': SubjectParams.subject_gender,
+                'option_pairs': TaskParams.options_pairs,
+                'objects_of_options': TaskParams.objects_of_options
+            }
 
-            param_file.write('options_pairs:{}\n'.format(TaskParams.options_pairs))
-            param_file.write('objects_of_options:{}\n'.format(TaskParams.objects_of_options))
+            json.dump(params, param_file)
 
 
     @staticmethod
     def save_phase_data(path, file_name, is_prediction=False):
 
-        with open('{}{}.csv'.format(path, file_name), mode='w') as data_file:
+        with open('{}{}.json'.format(path, file_name), mode='w') as data_file:
 
-            field_names = [
-                'options', 'possible_objects', 'all_reward_probs',
-                'possible_reward_probs', 'generated_randoms',
-                'possible_actual_rewards', 'selected_option',
-                'visited_objects', 'gained_rewards', 'reaction_times'
-            ]
-            if is_prediction:
-                field_names.append('predictions')
-
-            writer = csv.DictWriter(data_file, field_names=field_names)
-            writer.writeheader()
-
+            trials = []
             for block in range(TaskParams.num_of_blocks):
                 for trial in range(TaskParams.num_of_block_trials):
 
@@ -57,21 +49,17 @@ class Dumper:
                     if is_prediction:
                         row['predictions'] = Trials.subject_predictions[block][trial]
 
-                    writer.writerow(row)
+                    trials.append(row)
+
+            json.dump(trials, data_file)
 
 
     @staticmethod
     def save_training_data(path, file_name):
 
-        with open('{}{}.csv'.format(path, file_name), mode='w') as data_file:
+        with open('{}{}.json'.format(path, file_name), mode='w') as data_file:
 
-            field_names = [
-                'round', 'options', 'objects_orders', 'reaction_times'
-            ]
-
-            writer = csv.DictWriter(data_file, field_names=field_names)
-            writer.writeheader()
-
+            exercices = []
             for round in range(len(Trainer.training_options_order)):
                 for index in range(len(Trainer.training_options_order[round])):
 
@@ -82,21 +70,17 @@ class Dumper:
                         'reaction_times': Trainer.presentation_response_times[round][index]
                     }
 
-                    writer.writerow(row)
+                    exercices.append(row)
+
+            json.dump(exercices, data_file)
 
 
     @staticmethod
     def save_quiz_phase1_data(path, file_name):
 
-        with open('{}{}.csv'.format(path, file_name), mode='w') as data_file:
+        with open('{}{}.json'.format(path, file_name), mode='w') as data_file:
 
-            field_names = [
-                'round', 'options', 'objects_orders', 'reponses', 'reaction_times'
-            ]
-
-            writer = csv.DictWriter(data_file, field_names=field_names)
-            writer.writeheader()
-
+            exercices = []
             for round in range(len(Trainer.options_of_quiz_phase1)):
                 for index in range(len(Trainer.options_of_quiz_phase1[round])):
 
@@ -108,21 +92,17 @@ class Dumper:
                         'reaction_times': Trainer.quiz_phase1_response_times[round][index]
                     }
 
-                    writer.writerow(row)
+                    exercices.append(row)
+
+            json.dump(exercices, data_file)
 
 
     @staticmethod
     def save_quiz_phase2_data(path, file_name):
 
-        with open('{}{}.csv'.format(path, file_name), mode='w') as data_file:
+        with open('{}{}.json'.format(path, file_name), mode='w') as data_file:
 
-            field_names = [
-                'round', 'options', 'objects_orders', 'reponses', 'reaction_times'
-            ]
-
-            writer = csv.DictWriter(data_file, field_names=field_names)
-            writer.writeheader()
-
+            exercices = []
             for round in range(len(Trainer.options_of_quiz_phase2)):
                 for index in range(len(Trainer.options_of_quiz_phase2[round])):
 
@@ -134,24 +114,17 @@ class Dumper:
                         'reaction_times': Trainer.quiz_phase2_response_times[round][index]
                     }
 
-                    writer.writerow(row)
+                    exercices.append(row)
+
+            json.dump(exercices, data_file)
 
 
     @staticmethod
     def save_warmup_data(path, file_name):
 
-        with open('{}{}.csv'.format(path, file_name), mode='w') as data_file:
+        with open('{}{}.json'.format(path, file_name), mode='w') as data_file:
 
-            field_names = [
-                'options', 'possible_objects', 'possible_reward_probs',
-                'generated_randoms', 'possible_actual_rewards',
-                'selected_option', 'visited_objects', 'gained_rewards',
-                'reaction_times'
-            ]
-
-            writer = csv.DictWriter(data_file, field_names=field_names)
-            writer.writeheader()
-
+            trials = []
             for index in range(len(Trainer.options_of_quiz_phase2[round])):
 
                 row = {
@@ -166,4 +139,6 @@ class Dumper:
                     'reaction_times': Trials.warmup_selection_reaction_times[index]
                 }
 
-                writer.writerow(row)
+                trials.append(row)
+
+            json.dump(trials, data_file)
