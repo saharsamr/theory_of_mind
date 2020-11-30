@@ -1,10 +1,15 @@
 from task.presentation import PresentationClass
 from task.params.subject_params import SubjectParams
+from task.params.task_params import TaskParams
 from task.task import Task
 from task.trainer import Trainer
 from task.agents.mf_agent import MFAgent
+from task.agents.mb_agent import MBAgent
+from task.dumper import Dumper
 
 from psychopy import gui, core
+
+import random
 
 
 def main():
@@ -13,11 +18,26 @@ def main():
 
     subject_info = presenter.present_info_box()
     SubjectParams.set_subject_info(subject_info)
+    Dumper.save_params(TaskParams.data_dir, '{}-params'.format(SubjectParams.subject_id))
 
     Task.initialize()
-    Trainer.start_training(presenter)
-    Task.run_warm_up_block(presenter)
-    Task.start_task(presenter)
 
-    MFAgent.initialize_qvalues()
-    MFAgent.start_agent_task(presenter)
+    Trainer.start_training(presenter)
+    Dumper.save_training_data(TaskParams.data_dir, '{}-training'.format(SubjectParams.subject_id))
+    Dumper.save_quiz_phase1_data(TaskParams.data_dir, '{}-quiz-phase1'.format(SubjectParams.subject_id))
+    Dumper.save_quiz_phase2_data(TaskParams.data_dir, '{}-quiz-phase2'.format(SubjectParams.subject_id))
+
+    Task.run_warm_up_block(presenter)
+    Dumper.save_warmup_data(TaskParams.data_dir, '{}-warmup'.format(SubjectParams.subject_id))
+
+    Task.start_task(presenter)
+    Dumper.save_phase_data(TaskParams.data_dir, '{}-task-phase1'.format(SubjectParams.subject_id))
+
+    agent = MFAgent if random.random() < 0.5 else MBAgent
+    agent.initialize_trials()
+    agent.start_agent_task(presenter)
+    Dumper.save_phase_data(TaskParams.data_dir, '{}-task-phase2'.format(SubjectParams.subject_id), is_prediction=True)
+
+    TrialsInfo.reinitialize_trials_info()
+    Task.start_task(presenter)
+    Dumper.save_phase_data(TaskParams.data_dir, '{}-task-phase3'.format(SubjectParams.subject_id))

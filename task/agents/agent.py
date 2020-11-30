@@ -22,6 +22,7 @@ class Agent(abc.ABC):
 
         cls.initialize_qvalues()
 
+        TrialsInfo.reinitialize_trials_info()
         TaskLogics.assign_trials_pairs()
         TaskLogics.set_available_objects_in_trials()
         TaskLogics.set_objects_reward_probs_by_random_walk()

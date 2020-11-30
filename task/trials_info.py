@@ -29,6 +29,23 @@ class TrialsInfo:
 
 
     @classmethod
+    def reinitialize_trials_info(cls):
+
+        cls.trials_pairs = []
+        cls.trials_availables_objects = []
+        cls.objects_reward_probs_during_trials = []
+        cls.trials_availables_objects_reward_probs = []
+        cls.generated_randoms_for_rewards = []
+        cls.available_objects_actual_rewards = []
+
+        cls.subject_selected_options = []
+        cls.visited_objects = []
+        cls.objects_gained_rewards = []
+        cls.selection_reaction_times = []
+        cls.subject_predictions = []
+
+
+    @classmethod
     def set_trials_pairs(cls, trials_pairs):
 
         cls.trials_pairs = trials_pairs
