@@ -92,7 +92,7 @@ class PresentationClass:
                     '{}{}.jpg'.format(TaskParams.image_dir, object),
                     '{}{}.png'.format(TaskParams.image_dir, 'reward' if reward else 'box')
                 ],
-                [[0, 100], [-300, -300], [300, -300]], [[200, 300], [500, 300], [500, 300]]
+                [[0, 100], [0, -350], [-275, -525]], [[200, 300], [700, 500], [150, 150]]
             )
             sleep(TaskParams.feedback_duration)
 
