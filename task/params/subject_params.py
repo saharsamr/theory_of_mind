@@ -1,4 +1,4 @@
-from tools.directory_files import get_file_names
+from tools.directory_files import get_directory_names
 from task.params.task_params import TaskParams
 
 import datetime
@@ -23,9 +23,10 @@ class SubjectParams:
     @staticmethod
     def _find_new_subject_id_():
 
-        file_names = get_file_names(TaskParams.data_dir, 'csv')
-        if file_names:
-            subject_ids = [int(f.replace('.csv', ''))]
+        dir_names = get_directory_names(TaskParams.data_dir)
+        print(dir_names)
+        if dir_names:
+            subject_ids = [int(name) for name in dir_names]
             return max(subject_ids) + 1
         else:
             return 1
