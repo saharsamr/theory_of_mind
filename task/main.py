@@ -1,5 +1,6 @@
 from task.presentation import PresentationClass
 from task.params.subject_params import SubjectParams
+from task.trials_info import TrialsInfo
 from task.params.task_params import TaskParams
 from task.task import Task
 from task.trainer import Trainer
@@ -44,6 +45,6 @@ def main():
     Dumper.save_phase_data(TaskParams.data_dir, '{}-task-phase2'.format(SubjectParams.subject_id), is_prediction=True)
 
     presenter.present_instructions('phase3')
-    TrialsInfo.reinitialize_trials_info()
+    Task.initialize(first_phase=False)
     Task.start_task(presenter)
     Dumper.save_phase_data(TaskParams.data_dir, '{}-task-phase3'.format(SubjectParams.subject_id))

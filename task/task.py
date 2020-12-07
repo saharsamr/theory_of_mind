@@ -8,18 +8,23 @@ from time import sleep
 class Task:
 
     @staticmethod
-    def initialize():
+    def initialize(first_phase=True):
 
-        TaskLogics.pair_options()
-        TaskLogics.assign_objects_to_options()
+        TrialsInfo.reinitialize_trials_info()
+
+        if first_phase:
+            TaskLogics.pair_options()
+            TaskLogics.assign_objects_to_options()
+
         TaskLogics.assign_trials_pairs()
         TaskLogics.set_available_objects_in_trials()
         TaskLogics.set_objects_reward_probs_by_random_walk()
         TaskLogics.store_trials_available_objects_reward_prob()
         TaskLogics.set_objects_actual_rewards()
 
-        TaskLogics.manage_warmup_trials()
-        TaskLogics.set_rewards_for_warmup()
+        if first_phase:
+            TaskLogics.manage_warmup_trials()
+            TaskLogics.set_rewards_for_warmup()
 
 
     @staticmethod
