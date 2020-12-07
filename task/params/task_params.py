@@ -1,5 +1,5 @@
 import random
-
+from pathlib import Path
 
 class TaskParams:
 
@@ -49,3 +49,10 @@ class TaskParams:
     @classmethod
     def set_objects_of_options(cls, objects_of_options):
         cls.objects_of_options = objects_of_options
+
+
+    @classmethod
+    def set_subject_data_dir(cls, id):
+
+        cls.data_dir = cls.data_dir+str(id)+'/'
+        Path(cls.data_dir).mkdir(parents=True, exist_ok=True)

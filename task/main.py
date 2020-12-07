@@ -18,6 +18,7 @@ def main():
 
     subject_info = presenter.present_info_box()
     SubjectParams.set_subject_info(subject_info)
+    TaskParams.set_subject_data_dir(SubjectParams.subject_id)
     Dumper.save_params(TaskParams.data_dir, '{}-params'.format(SubjectParams.subject_id))
 
     Task.initialize()
