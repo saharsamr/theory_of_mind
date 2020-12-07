@@ -88,7 +88,7 @@ class Agent(abc.ABC):
 
             cls.update_qvalues(selected, objects, rewards)
 
-            block_selected.append(selected)
+            block_selected.append(selected.item())
             block_rewards.append(rewards)
             block_objects.append(objects)
             block_reaction_time.append(reaction_time)

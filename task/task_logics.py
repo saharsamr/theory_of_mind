@@ -27,7 +27,7 @@ class TaskLogics:
             trials_pairs[i] = tuple(trials_pairs[i]) if same_order else (trials_pairs[i][1], trials_pairs[i][0])
 
         TrialsInfo.set_trials_pairs(
-            np.reshape(trials_pairs, (TaskParams.num_of_blocks, TaskParams.num_of_block_trials, 2))
+            np.reshape(trials_pairs, (TaskParams.num_of_blocks, TaskParams.num_of_block_trials, 2)).tolist()
         )
 
 
@@ -60,8 +60,8 @@ class TaskLogics:
         for pair_probs in TrialsInfo.warmup_reward_probs:
 
             pair_random = [(random.random(), random.random()) for _ in pair_probs]
-            pair_reward = [(rand[0] < prob[0], rand[1] < prob[1]) for rand, prob in zip(pair_random, pair_probs)]
-            generated_randoms.append(generated_randoms)
+            pair_reward = [(int(rand[0] < prob[0]), int(rand[1] < prob[1])) for rand, prob in zip(pair_random, pair_probs)]
+            generated_randoms.append(pair_random)
             actual_rewards.append(pair_reward)
 
         TrialsInfo.set_rewards_for_warmup(generated_randoms, actual_rewards)
@@ -148,7 +148,7 @@ class TaskLogics:
                 objects1 = TaskParams.objects_of_options[pair[0]]
                 objects2 = TaskParams.objects_of_options[pair[1]]
                 random.shuffle(objects1), random.shuffle(objects2)
-                trial_objects = [tuple(objects1), tuple(objects2)]
+                trial_objects = [objects1, objects2]
                 block_objects.append(trial_objects)
 
             objects.append(block_objects)
@@ -165,7 +165,7 @@ class TaskLogics:
             random.shuffle(init_probs)
             for i in range(TaskParams.num_of_block_trials):
                 block_rewards.append(
-                    np.array(init_probs) if i == 0 else TaskLogics._rewards_random_walk(block_rewards[i-1])
+                    init_probs if i == 0 else TaskLogics._rewards_random_walk(block_rewards[i-1])
                 )
 
             objects_reward_probs.append(block_rewards)
@@ -220,8 +220,8 @@ class TaskLogics:
     @staticmethod
     def _rewards_random_walk(init_probs):
 
-        delta_values = TaskParams.reward_prob_std * np.random.normal(size=init_probs.shape)
-        new_reward_probs = init_probs + delta_values
+        delta_values = TaskParams.reward_prob_std * np.random.normal(size=np.array(init_probs).shape)
+        new_reward_probs = np.array(init_probs) + delta_values
         bool_ = False
         for i, reward in enumerate(new_reward_probs):
             if reward > TaskParams.max_reward_prob:
@@ -231,7 +231,7 @@ class TaskLogics:
                 bool_ = True
                 new_reward_probs[i] = TaskParams.min_reward_prob + (TaskParams.min_reward_prob - reward)
 
-        return new_reward_probs
+        return new_reward_probs.tolist()
 
 
     @staticmethod

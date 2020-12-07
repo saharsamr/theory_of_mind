@@ -53,7 +53,8 @@ class PresentationClass:
         )
         key = Interaction.option_select(time_limit)
         if not key:
-            # draw the faster.jpg
+            self.draw_image(TaskParams.image_dir+'faster.png', size=TaskParams.screen_size)
+            sleep(TaskParams.feedback_duration)
             return key, float('inf')
 
         reaction_time = time() - start
@@ -107,13 +108,13 @@ class PresentationClass:
     def present_instructions(self, related_phase):
 
         instruction_folder = TaskParams.instructions_path + related_phase + '/'
-        images_name = sorted(get_file_names(instruction_folder))
+        images_name = sorted(get_file_names(instruction_folder, extention='png'))
 
         instruction_index, num_of_images = 0, len(images_name)
         while True:
 
             image = images_name[instruction_index]
-            self.draw_image(instruction_folder+image)
+            self.draw_image(instruction_folder+image, size=TaskParams.screen_size)
 
             key_list = Interaction.instrutions_allowed_keys(instruction_index, num_of_images)
             keys = event.waitKeys(keyList=key_list)

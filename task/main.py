@@ -14,7 +14,7 @@ import random
 
 def main():
 
-    presenter = PresentationClass(screen_size=[2736, 1824])
+    presenter = PresentationClass(screen_size=TaskParams.screen_size)
 
     subject_info = presenter.present_info_box()
     SubjectParams.set_subject_info(subject_info)
@@ -22,22 +22,27 @@ def main():
 
     Task.initialize()
 
+    presenter.present_instructions('start-training')
     Trainer.start_training(presenter)
     Dumper.save_training_data(TaskParams.data_dir, '{}-training'.format(SubjectParams.subject_id))
     Dumper.save_quiz_phase1_data(TaskParams.data_dir, '{}-quiz-phase1'.format(SubjectParams.subject_id))
     Dumper.save_quiz_phase2_data(TaskParams.data_dir, '{}-quiz-phase2'.format(SubjectParams.subject_id))
 
+    presenter.present_instructions('phase1')
     Task.run_warm_up_block(presenter)
     Dumper.save_warmup_data(TaskParams.data_dir, '{}-warmup'.format(SubjectParams.subject_id))
 
+    presenter.present_instructions('start-task')
     Task.start_task(presenter)
     Dumper.save_phase_data(TaskParams.data_dir, '{}-task-phase1'.format(SubjectParams.subject_id))
 
-    agent = MFAgent if random.random() < 0.5 else MBAgent
+    presenter.present_instructions('phase2')
+    agent, agent_name = (MFAgent, 'MF') if random.random() < 0.5 else (MBAgent, 'MB')
     agent.initialize_trials()
     agent.start_agent_task(presenter)
     Dumper.save_phase_data(TaskParams.data_dir, '{}-task-phase2'.format(SubjectParams.subject_id), is_prediction=True)
 
+    presenter.present_instructions('phase3')
     TrialsInfo.reinitialize_trials_info()
     Task.start_task(presenter)
     Dumper.save_phase_data(TaskParams.data_dir, '{}-task-phase3'.format(SubjectParams.subject_id))

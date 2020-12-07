@@ -3,6 +3,8 @@ import random
 
 class TaskParams:
 
+    screen_size = [2736, 1824]
+
     data_dir = 'task/data/'
     image_dir = 'task/images/'
     instructions_path = 'task/instructions/'
@@ -20,7 +22,8 @@ class TaskParams:
     feedback_duration = 1.0
     clear_after_feedback = 0.1
     time_limit_for_selection = 2.0
-    
+    time_for_rest = 60.0
+
     min_time_for_agent_slection = 0.5
 
     n_warm_up_trials = 8

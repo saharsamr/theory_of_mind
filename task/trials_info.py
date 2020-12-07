@@ -115,9 +115,9 @@ class TrialsInfo:
 
         import numpy as np
 
-        cls.warmup_trials_pairs = np.array(cls.trials_pairs[0])[sampling_indices]
-        cls.warmup_available_objects = np.array(cls.trials_availables_objects[0])[sampling_indices]
-        cls.warmup_reward_probs = np.array(cls.trials_availables_objects_reward_probs[0])[sampling_indices]
+        cls.warmup_trials_pairs = np.array(cls.trials_pairs[0])[sampling_indices].tolist()
+        cls.warmup_available_objects = np.array(cls.trials_availables_objects[0])[sampling_indices].tolist()
+        cls.warmup_reward_probs = np.array(cls.trials_availables_objects_reward_probs[0])[sampling_indices].tolist()
 
 
     @classmethod

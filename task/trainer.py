@@ -2,6 +2,7 @@ from task.params.task_params import TaskParams
 from task.presentation import PresentationClass
 
 import random
+from time import sleep
 
 
 class Trainer:
@@ -129,6 +130,13 @@ class Trainer:
                 round_responses.append(1 if key == 'right' else 0)
             round_response_times.append(response_time)
 
+            if round_responses[-1] == 1:
+                presenter.draw_image(TaskParams.image_dir+'true.png')
+            else:
+                presenter.draw_image(TaskParams.image_dir+'false.png')
+
+            sleep(TaskParams.feedback_duration)
+
         cls.quiz_phase1_responses.append(round_responses)
         cls.quiz_phase1_response_times.append(round_response_times)
 
@@ -148,6 +156,13 @@ class Trainer:
             elif object in TaskParams.objects_of_options[options[1]]:
                 round_responses.append(1 if key == 'right' else 0)
             round_response_times.append(response_time)
+
+            if round_responses[-1] == 1:
+                presenter.draw_image(TaskParams.image_dir+'true.png')
+            else:
+                presenter.draw_image(TaskParams.image_dir+'false.png')
+
+            sleep(TaskParams.feedback_duration)
 
         cls.quiz_phase2_responses.append(round_responses)
         cls.quiz_phase2_response_times.append(round_response_times)
@@ -177,9 +192,23 @@ class Trainer:
 
         passed, round = False, 0
         while not passed:
+
             cls.set_training_options_order(round)
             cls.set_objects_presentation_order(round)
+
             cls.training_presentation_phase(round, presenter)
+
+            presenter.present_instructions('quiz1')
             cls.training_quiz_phase1(presenter, round)
+
+            presenter.present_instructions('quiz2')
             cls.training_quiz_phase2(presenter, round)
+
             passed, all_correct, all_fast = cls.check_quiz_passing()
+
+            if not all_correct:
+                presenter.present_instructions('quiz-mistakes')
+            elif not all_fast:
+                presenter.present_instructions('quiz-not-fast')
+            elif passed:
+                presenter.present_instructions('quiz-passed')

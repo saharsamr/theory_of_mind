@@ -9,12 +9,12 @@ import json
 class Dumper:
 
     @staticmethod
-    def save_params(paht, file_name):
+    def save_params(path, file_name):
 
         with open('{}{}.json'.format(path, file_name), mode='w') as param_file:
 
             params = {
-                'date': SubjectParams.subject_date,
+                'date': SubjectParams.subject_date.strftime("%m/%d/%Y, %H:%M:%S"),
                 'subjectID': SubjectParams.subject_id,
                 'age': SubjectParams.subject_age,
                 'gender': SubjectParams.subject_gender,
@@ -26,7 +26,7 @@ class Dumper:
 
 
     @staticmethod
-    def save_phase_data(path, file_name, is_prediction=False):
+    def save_phase_data(path, file_name, is_prediction=False, agent=None):
 
         with open('{}{}.json'.format(path, file_name), mode='w') as data_file:
 
@@ -42,12 +42,15 @@ class Dumper:
                         'generated_randoms': Trials.generated_randoms_for_rewards[block][trial],
                         'possible_actual_rewards': Trials.available_objects_actual_rewards[block][trial],
                         'selected_option': Trials.subject_selected_options[block][trial],
-                        'visited_objects': Trials.visited_objects[block][trial],
-                        'gained_rewards': Trials.objects_gained_rewards[block][trial],
+                        'visited_objects': None if not Trials.visited_objects[block][trial] else\
+                            [int(o) for o in Trials.visited_objects[block][trial]],
+                        'gained_rewards': None if not Trials.objects_gained_rewards[block][trial] else\
+                            [int(r) for r in Trials.objects_gained_rewards[block][trial]],
                         'reaction_times': Trials.selection_reaction_times[block][trial]
                     }
                     if is_prediction:
                         row['predictions'] = Trials.subject_predictions[block][trial]
+                        row['agent'] = agent
 
                     trials.append(row)
 
@@ -125,7 +128,7 @@ class Dumper:
         with open('{}{}.json'.format(path, file_name), mode='w') as data_file:
 
             trials = []
-            for index in range(len(Trainer.options_of_quiz_phase2[round])):
+            for index in range(len(Trials.warmup_trials_pairs)):
 
                 row = {
                     'options': Trials.warmup_trials_pairs[index],
@@ -134,8 +137,8 @@ class Dumper:
                     'generated_randoms': Trials.warmup_generated_randoms[index],
                     'possible_actual_rewards': Trials.warmup_objects_actual_rewards[index],
                     'selected_option': Trials.warmup_subject_selections[index],
-                    'visited_objects': Trials.warmup_visited_objects[index],
-                    'gained_rewards': Trials.warmup_gained_rewards[index],
+                    'visited_objects': [int(o) for o in Trials.warmup_visited_objects[index]],
+                    'gained_rewards': [int(r) for r in Trials.warmup_gained_rewards[index]],
                     'reaction_times': Trials.warmup_selection_reaction_times[index]
                 }
 
