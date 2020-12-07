@@ -48,7 +48,7 @@ class Task:
         for block in range(TaskParams.num_of_blocks):
 
             if len(selecteds) != 0:
-                presenter.draw_image(TaskParams.image_dir+'rest.png')
+                presenter.draw_image(TaskParams.image_dir+'rest.png', size=TaskParams.screen_size)
                 sleep(TaskParams.time_for_rest)
                 presenter.present_instructions('next-block')
 
