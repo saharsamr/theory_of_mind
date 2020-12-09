@@ -42,7 +42,7 @@ def main():
     agent, agent_name = (MFAgent, 'MF') if random.random() < 0.5 else (MBAgent, 'MB')
     agent.initialize_trials()
     agent.start_agent_task(presenter)
-    Dumper.save_phase_data(TaskParams.data_dir, '{}-task-phase2'.format(SubjectParams.subject_id), is_prediction=True)
+    Dumper.save_phase_data(TaskParams.data_dir, '{}-task-phase2'.format(SubjectParams.subject_id), is_prediction=True, agent=agent_name)
 
     presenter.present_instructions('phase3')
     Task.initialize(first_phase=False)

@@ -12,9 +12,9 @@ import abc
 class Agent(abc.ABC):
 
     option_qvalues = {}
-    lr_param = 0.05
+    lr_param = 0.5
     forgetting_param = 0.05
-    softmax_param = 0.09
+    softmax_param = 1.0
 
 
     @classmethod
@@ -49,6 +49,7 @@ class Agent(abc.ABC):
         reaction_times, predicteds = [], []
         for block in range(TaskParams.n_agent_blocks):
 
+            cls.initialize_qvalues()
             block_selected, block_rewards, block_objects, block_reaction_time, block_predicted = \
             cls.run_agent_trials_block(
                 presenter,
