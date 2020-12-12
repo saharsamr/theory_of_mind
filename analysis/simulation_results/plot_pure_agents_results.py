@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 
 from analysis.simulation_results.MB_behaviour import extract_MB_behavior_data
+from analysis.simulation_results.MF_behaviour import extract_MF_behavior_data
 
 
 def plot_pure_MF_agent(data_path, subjectID):
@@ -28,7 +29,7 @@ def plot_pure_MB_agent(data_path, subjectID):
 
     fig = plt.figure('MB agent repeat probabilities')
     xs = [0, 1]
-    ys = [common1, common0]
+    ys = [common0, common1]
     plt.plot(xs, ys)
 
     plt.xticks(range(2), ['C=0', 'C=1'])
