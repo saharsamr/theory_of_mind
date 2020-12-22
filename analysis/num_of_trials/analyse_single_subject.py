@@ -1,5 +1,5 @@
 from analysis.num_of_trials.extract_info import extract_subject_trials_info, get_bad_trial_indices
-from analysis.num_of_trials.glmfit import fit_binomial_glm
+from analysis.glmfit import fit_binomial_glm
 from analysis.num_of_trials.print_results import print_glm_results
 
 import numpy as np
