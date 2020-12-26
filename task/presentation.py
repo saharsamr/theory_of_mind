@@ -78,7 +78,19 @@ class PresentationClass:
 
         self.present_objects_rewards(selected, selected_objects, selected_rewards)
 
+        predicted_option = options[0] if key == 'left' else options[1]
+        self.present_prediction_reward(predicted_option, selected)
+
         return key, reaction_time
+
+
+    def present_prediction_reward(self, predicted_option, selected_option):
+
+        if predicted_option == selected_option:
+            self.draw_image(TaskParams.image_dir+'true.png')
+        else:
+            self.draw_image(TaskParams.image_dir+'false.png')
+        sleep(TaskParams.feedback_duration)
 
 
     def present_objects_rewards(self, option, objects, rewards):
