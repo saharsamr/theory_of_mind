@@ -8,6 +8,7 @@ class TaskParams:
     data_dir = 'task/data/'
     image_dir = 'task/images/'
     instructions_path = 'task/instructions/'
+    random_walks_path = 'task/random_walks/'
 
     first_options = (0, 1, 2, 3)
     second_options = (0, 1, 2, 3)

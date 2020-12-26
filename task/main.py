@@ -1,14 +1,11 @@
 from task.presentation import PresentationClass
 from task.params.subject_params import SubjectParams
-from task.trials_info import TrialsInfo
 from task.params.task_params import TaskParams
 from task.task import Task
 from task.trainer import Trainer
 from task.agents.mf_agent import MFAgent
 from task.agents.mb_agent import MBAgent
 from task.dumper import Dumper
-
-from psychopy import gui, core
 
 import random
 
@@ -45,6 +42,6 @@ def main():
     Dumper.save_phase_data(TaskParams.data_dir, '{}-task-phase2'.format(SubjectParams.subject_id), is_prediction=True, agent=agent_name)
 
     presenter.present_instructions('phase3')
-    Task.initialize(first_phase=False)
+    Task.initialize(first_phase=False, phase=3)
     Task.start_task(presenter)
     Dumper.save_phase_data(TaskParams.data_dir, '{}-task-phase3'.format(SubjectParams.subject_id))

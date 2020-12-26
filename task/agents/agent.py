@@ -1,10 +1,8 @@
 from task.params.task_params import TaskParams
 from task.task_logics import TaskLogics
 from task.trials_info import TrialsInfo
-from task.task import Task
 
 import numpy as np
-import random
 
 import abc
 
@@ -18,14 +16,14 @@ class Agent(abc.ABC):
 
 
     @classmethod
-    def initialize_trials(cls):
+    def initialize_trials(cls, phase=2):
 
         cls.initialize_qvalues()
 
         TrialsInfo.reinitialize_trials_info()
         TaskLogics.assign_trials_pairs()
         TaskLogics.set_available_objects_in_trials()
-        TaskLogics.set_objects_reward_probs_by_random_walk()
+        TaskLogics.set_objects_reward_probs(phase)
         TaskLogics.store_trials_available_objects_reward_prob()
         TaskLogics.set_objects_actual_rewards()
 

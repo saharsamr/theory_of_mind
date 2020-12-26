@@ -8,7 +8,7 @@ from time import sleep
 class Task:
 
     @staticmethod
-    def initialize(first_phase=True):
+    def initialize(first_phase=True, phase=1):
 
         TrialsInfo.reinitialize_trials_info()
 
@@ -18,7 +18,7 @@ class Task:
 
         TaskLogics.assign_trials_pairs()
         TaskLogics.set_available_objects_in_trials()
-        TaskLogics.set_objects_reward_probs_by_random_walk()
+        TaskLogics.set_objects_reward_probs(phase)
         TaskLogics.store_trials_available_objects_reward_prob()
         TaskLogics.set_objects_actual_rewards()
 
@@ -63,7 +63,7 @@ class Task:
             selecteds.append(block_selected)
             reaction_times.append(block_reaction_time)
 
-        TaskLogics.save_tirals_results(selecteds, reaction_times)
+        TaskLogics.save_trials_results(selecteds, reaction_times)
 
 
     @staticmethod

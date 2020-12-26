@@ -1,10 +1,11 @@
 from task.params.task_params import TaskParams
+from task.params.subject_params import SubjectParams
 from task.trials_info import TrialsInfo
 
 import random
+import pickle
 import copy
 import numpy as np
-from collections import defaultdict
 
 
 class TaskLogics:
@@ -68,7 +69,7 @@ class TaskLogics:
 
 
     @staticmethod
-    def save_tirals_results(selected_keys, reaction_times, predictions=None):
+    def save_trials_results(selected_keys, reaction_times, predictions=None):
 
         selected_options, visited_objects, rewards = [], [], []
         for block in range(TaskParams.num_of_blocks):
@@ -157,18 +158,13 @@ class TaskLogics:
 
 
     @staticmethod
-    def set_objects_reward_probs_by_random_walk():
+    def set_objects_reward_probs(phase):
 
-        objects_reward_probs = []
-        for block in range(TaskParams.num_of_blocks):
-            block_rewards, init_probs = [], copy.deepcopy(TaskParams.init_block_probs)
-            random.shuffle(init_probs)
-            for i in range(TaskParams.num_of_block_trials):
-                block_rewards.append(
-                    init_probs if i == 0 else TaskLogics._rewards_random_walk(block_rewards[i-1])
-                )
-
-            objects_reward_probs.append(block_rewards)
+        random_walk_file_name = '{}walk{}.pkl'.format(
+            TaskParams.random_walks_path, SubjectParams.phases_random_walks[phase-1]
+        )
+        with open(random_walk_file_name, 'rb') as file:
+            objects_reward_probs = pickle.load(file)
 
         TrialsInfo.set_objects_reward_probs(objects_reward_probs)
 
@@ -215,23 +211,6 @@ class TaskLogics:
 
         TrialsInfo.set_generated_randoms_for_rewards(generated_randoms)
         TrialsInfo.set_objects_actual_rewards(actual_rewards)
-
-
-    @staticmethod
-    def _rewards_random_walk(init_probs):
-
-        delta_values = TaskParams.reward_prob_std * np.random.normal(size=np.array(init_probs).shape)
-        new_reward_probs = np.array(init_probs) + delta_values
-        bool_ = False
-        for i, reward in enumerate(new_reward_probs):
-            if reward > TaskParams.max_reward_prob:
-                bool_ = True
-                new_reward_probs[i] = TaskParams.max_reward_prob - (reward - TaskParams.max_reward_prob)
-            elif reward < TaskParams.min_reward_prob:
-                bool_ = True
-                new_reward_probs[i] = TaskParams.min_reward_prob + (TaskParams.min_reward_prob - reward)
-
-        return new_reward_probs.tolist()
 
 
     @staticmethod
