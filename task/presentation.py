@@ -44,6 +44,23 @@ class PresentationClass:
             self.screen.flip()
 
 
+    def draw_rectangle(self, x1, y1, x2, y2, color):
+
+        self.draw_line(x1, y1, x2, y1, color)
+        self.draw_line(x1, y2, x2, y2, color)
+        self.draw_line(x1, y1, x1, y2, color)
+        self.draw_line(x2, y1, x2, y2, color)
+
+
+    def draw_line(self, x1, y1, x2, y2, color):
+
+        line = visual.Line(self.screen)
+        line.start, line.end = [x1, y1], [x2, y2]
+        line.setColor(color, 'rgb')
+        line.lineWidth = 5
+        line.draw()
+
+
     def present_trial(self, options, objects, rewards, time_limit=float('inf')):
 
         start, reaction_time = time(), 0
@@ -51,18 +68,32 @@ class PresentationClass:
             ['{}{}.jpg'.format(TaskParams.image_dir, options[0]), '{}{}.jpg'.format(TaskParams.image_dir, options[1])],
             [[-200, 0], [200, 0]], [[300, 500], [300, 500]]
         )
+
         key = Interaction.option_select(time_limit)
         if not key:
             self.draw_image(TaskParams.image_dir+'faster.png', size=TaskParams.screen_size)
             sleep(TaskParams.feedback_duration)
             return key, float('inf')
-
         reaction_time = time() - start
 
         index = 0 if key == 'left' else 1
+        self.draw_multiple_images(
+            ['{}{}.jpg'.format(TaskParams.image_dir, options[0]), '{}{}.jpg'.format(TaskParams.image_dir, options[1])],
+            [[-200, 0], [200, 0]], [[300, 500], [300, 500]], flip=False
+        )
+        self.draw_selected_rectangle(key)
+        self.screen.flip()
+        sleep(TaskParams.lag_to_response)
+
         self.present_objects_rewards(options[index], objects[index], rewards[index])
 
         return key, reaction_time
+
+
+    def draw_selected_rectangle(self, key, color=[-1, 1, -1]):
+
+        x1, y1, x2, y2 = (-360, 260, -40, -260) if key == 'left' else (40, 260, 360, -260)
+        self.draw_rectangle(x1, y1, x2, y2, color)
 
 
     def present_agent_trial(self, options, selected, selected_objects, selected_rewards, time_limit=float('inf')):
