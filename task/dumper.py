@@ -1,7 +1,7 @@
 from task.trials_info import TrialsInfo as Trials
 from task.params.task_params import TaskParams
 from task.params.subject_params import SubjectParams
-from task.trainer import Trainer
+from task.training.trainer import Trainer
 
 import json
 

@@ -2,7 +2,7 @@ from task.presentation import PresentationClass
 from task.params.subject_params import SubjectParams
 from task.params.task_params import TaskParams
 from task.task import Task
-from task.trainer import Trainer
+from task.training.trainer import Trainer
 from task.agents.mf_agent import MFAgent
 from task.agents.mb_agent import MBAgent
 from task.dumper import Dumper
