@@ -110,6 +110,8 @@ class PresentationClass:
         self.present_objects_rewards(selected, selected_objects, selected_rewards)
 
         predicted_option = options[0] if key == 'left' else options[1]
+        self.screen.flip()
+        sleep(TaskParams.lag_to_response)
         self.present_prediction_reward(predicted_option, selected)
 
         return key, reaction_time
@@ -118,9 +120,12 @@ class PresentationClass:
     def present_prediction_reward(self, predicted_option, selected_option):
 
         if predicted_option == selected_option:
-            self.draw_image(TaskParams.image_dir+'true.png')
+            self.draw_image(TaskParams.image_dir+'fail.png', size=[500, 500])
         else:
-            self.draw_image(TaskParams.image_dir+'false.png')
+            self.draw_multiple_images(
+                [TaskParams.image_dir+'check.png', TaskParams.image_dir+'money.png'],
+                [[0, 0], [-150, -150]], [[500, 500], [300, 300]]
+            )
         sleep(TaskParams.feedback_duration)
 
 
