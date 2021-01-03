@@ -3,6 +3,7 @@ from task.params.subject_params import SubjectParams
 from task.params.task_params import TaskParams
 from task.task import Task
 from task.training.trainer import Trainer
+from task.training.prediction_trainer import PredictionTrainer
 from task.agents.mf_agent import MFAgent
 from task.agents.mb_agent import MBAgent
 from task.dumper import Dumper
@@ -36,6 +37,7 @@ def main():
     Dumper.save_phase_data(TaskParams.data_dir, '{}-task-phase1'.format(SubjectParams.subject_id))
 
     presenter.present_instructions('phase2')
+    PredictionTrainer.start_training(presenter)
     agent, agent_name = (MFAgent, 'MF') if random.random() < 0.5 else (MBAgent, 'MB')
     agent.initialize_trials()
     agent.start_agent_task(presenter)

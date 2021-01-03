@@ -117,9 +117,38 @@ class PresentationClass:
         return key, reaction_time
 
 
+    def present_prediction_training_step(self, options, selected, predicted, time_limit=float('inf')):
+
+        # add question
+        agent_selected = \
+            self.present_prediction_training_question(options, selected, time_limit)
+        # add question
+        user_predicted = \
+            self.present_prediction_training_question(options, predicted, time_limit)
+
+        return agent_selected, user_predicted
+        
+
+    def present_prediction_training_question(self, options, true_response, time_limit=float('inf')):
+
+        self.draw_multiple_images(
+            ['{}{}.jpg'.format(TaskParams.image_dir, options[0]), '{}{}.jpg'.format(TaskParams.image_dir, options[1])],
+            [[-200, 0], [200, 0]], [[300, 500], [300, 500]]
+        )
+        key = Interaction.option_select(time_limit)
+        response_index = 0 if key == 'left' else 1
+
+        if true_response == options[response_index]:
+            self.draw_image(TaskParams.image_dir + 'true.png')
+        else:
+            self.draw_image(TaskParams.image_dir + 'false.png')
+
+        return options[response_index]
+
+
     def present_prediction_reward(self, predicted_option, selected_option):
 
-        if predicted_option == selected_option:
+        if predicted_option != selected_option:
             self.draw_image(TaskParams.image_dir+'fail.png', size=[500, 500])
         else:
             self.draw_multiple_images(

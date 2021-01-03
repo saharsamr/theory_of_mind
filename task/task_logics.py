@@ -36,36 +36,48 @@ class TaskLogics:
     def manage_warmup_trials():
 
         not_finished = lambda sampled, selected: len(sampled) + len(selected) < TaskParams.n_warm_up_trials
+        selected_indices = TaskLogics.sample_trials(not_finished)
+        TrialsInfo.sample_for_warmup(selected_indices)
+
+
+    @staticmethod
+    def sample_trials(finish_func):
 
         selected_indices = [0, 1, 2, 3]
         random.shuffle(selected_indices)
         sampled_indices, visited_options = [], []
-        while not_finished(sampled_indices, selected_indices):
+        while finish_func(sampled_indices, selected_indices):
             for ind, trial_pair in enumerate(TrialsInfo.trials_pairs[0]):
-                if ind >= len(selected_indices) and not_finished(sampled_indices, selected_indices):
+                if ind >= len(selected_indices) and finish_func(sampled_indices, selected_indices):
                     if (str(trial_pair) not in visited_options) and (random.random() < 0.1):
                         sampled_indices.append(ind)
                         visited_options.append(str(trial_pair))
-                elif not not_finished(sampled_indices, selected_indices):
+                elif not finish_func(sampled_indices, selected_indices):
                     break
-        random.shuffle(sampled_indices)
 
-        selected_indices.extend(sampled_indices)
-        TrialsInfo.sample_for_warmup(selected_indices)
+        random.shuffle(sampled_indices)
+        return selected_indices + sampled_indices
 
 
     @staticmethod
     def set_rewards_for_warmup():
 
-        generated_randoms, actual_rewards = [], []
-        for pair_probs in TrialsInfo.warmup_reward_probs:
+        generated_randoms, actual_rewards = TaskLogics.set_reward(TrialsInfo.warmup_reward_probs)
+        TrialsInfo.set_rewards_for_warmup(generated_randoms, actual_rewards)
 
+
+    @staticmethod
+    def set_reward(reward_probs):
+
+        generated_randoms, actual_rewards = [], []
+        for pair_probs in reward_probs:
             pair_random = [(random.random(), random.random()) for _ in pair_probs]
-            pair_reward = [(int(rand[0] < prob[0]), int(rand[1] < prob[1])) for rand, prob in zip(pair_random, pair_probs)]
+            pair_reward = [(int(rand[0] < prob[0]), int(rand[1] < prob[1])) for rand, prob in
+                           zip(pair_random, pair_probs)]
             generated_randoms.append(pair_random)
             actual_rewards.append(pair_reward)
 
-        TrialsInfo.set_rewards_for_warmup(generated_randoms, actual_rewards)
+        return generated_randoms, actual_rewards
 
 
     @staticmethod

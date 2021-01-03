@@ -24,10 +24,12 @@ class TaskParams:
     clear_after_feedback = 0.1
     time_limit_for_selection = 2.0
     time_for_rest = 60.0
+    n_random_walks = 6
 
-    min_time_for_agent_slection = 0.5
+    min_time_for_agent_selection = 0.5
 
     n_warm_up_trials = 8
+    n_prediction_training_trials = 8
     num_of_blocks = 3
     num_of_block_trials = 60
     n_trials = 3 * 60
