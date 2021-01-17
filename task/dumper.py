@@ -2,6 +2,7 @@ from task.trials_info import TrialsInfo as Trials
 from task.params.task_params import TaskParams
 from task.params.subject_params import SubjectParams
 from task.training.trainer import Trainer
+from task.training.prediction_trainer import PredictionTrainer
 
 import json
 
@@ -116,6 +117,30 @@ class Dumper:
                         'objects_orders': Trainer.objects_of_quiz_phase2[round][index],
                         'reponses': Trainer.quiz_phase2_responses[round][index],
                         'reaction_times': Trainer.quiz_phase2_response_times[round][index]
+                    }
+
+                    exercices.append(row)
+
+            json.dump(exercices, data_file)
+
+
+    @staticmethod
+    def save_prediction_training_data(path, file_name):
+
+        with open('{}{}.json'.format(path, file_name), mode='w') as data_file:
+
+            exercices = []
+            for round in range(len(PredictionTrainer.trial_pairs)):
+                for index in range(len(PredictionTrainer.trial_pairs[round])):
+                    row = {
+                        'round': round,
+                        'options': PredictionTrainer.trial_pairs[round][index],
+                        'agent_selection': PredictionTrainer.agent_selections[round][index],
+                        'user_prediction': PredictionTrainer.user_predictions[round][index],
+                        'agent_selection_response':
+                            PredictionTrainer.agent_selection_responses[round][index],
+                        'user_prediction_response':
+                            PredictionTrainer.user_prediction_responses[round][index]
                     }
 
                     exercices.append(row)
