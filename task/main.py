@@ -28,6 +28,8 @@ def main():
     Dumper.save_quiz_phase1_data(TaskParams.data_dir, '{}-quiz-phase1'.format(SubjectParams.subject_id))
     Dumper.save_quiz_phase2_data(TaskParams.data_dir, '{}-quiz-phase2'.format(SubjectParams.subject_id))
 
+    PredictionTrainer.start_training(presenter)
+
     presenter.present_instructions('phase1')
     Task.run_warm_up_block(presenter)
     Dumper.save_warmup_data(TaskParams.data_dir, '{}-warmup'.format(SubjectParams.subject_id))
@@ -37,7 +39,6 @@ def main():
     Dumper.save_phase_data(TaskParams.data_dir, '{}-task-phase1'.format(SubjectParams.subject_id))
 
     presenter.present_instructions('phase2')
-    PredictionTrainer.start_training(presenter)
     agent, agent_name = (MFAgent, 'MF') if random.random() < 0.5 else (MBAgent, 'MB')
     agent.initialize_trials()
     agent.start_agent_task(presenter)

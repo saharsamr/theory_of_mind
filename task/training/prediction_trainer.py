@@ -32,8 +32,7 @@ class PredictionTrainer:
             cls.user_prediction_responses.append(user_selections)
             cls.agent_selection_responses.append(agent_selections)
 
-            if cls.is_passed(agent_selections, user_selections, round_):
-                passed = True
+            passed = cls.is_passed(agent_selections, user_selections, round_)
             round_ += 1
 
     @classmethod
