@@ -55,6 +55,7 @@ class Agent(abc.ABC):
                 TrialsInfo.trials_pairs[block],
                 TrialsInfo.trials_availables_objects[block],
                 TrialsInfo.available_objects_actual_rewards[block],
+                time_limit=TaskParams.time_limit_for_prediction
             )
 
             selecteds.append(block_selected)
@@ -82,7 +83,10 @@ class Agent(abc.ABC):
             rewards = block_object_rewards[t_index][selected_index]
             objects = block_available_objects[t_index][selected_index]
 
-            key, reaction_time = presenter.present_agent_trial(block_trial_pairs[t_index], selected, objects, rewards)
+            key, reaction_time = presenter.present_agent_trial(
+                block_trial_pairs[t_index], selected,
+                objects, rewards, time_limit=time_limit
+            )
             predicted = block_trial_pairs[t_index][0] if key == 'left' else block_trial_pairs[t_index][1]
 
             cls.update_qvalues(selected, objects, rewards)

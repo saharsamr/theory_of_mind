@@ -23,6 +23,7 @@ class TaskParams:
     feedback_duration = 1.0
     clear_after_feedback = 0.1
     time_limit_for_selection = 2.0
+    time_limit_for_prediction = 3.0
     time_for_rest = 60.0
     n_random_walks = 6
 
