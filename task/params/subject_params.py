@@ -12,6 +12,7 @@ class SubjectParams:
     subject_age = None
     subject_gender = None
     phases_random_walks = None
+    trainings_random_walk = None
 
 
     @classmethod
@@ -40,5 +41,6 @@ class SubjectParams:
         file_names = get_file_names(TaskParams.random_walks_path, 'pkl')
         file_names = [name.replace('walk', '') for name in file_names]
         file_names = [name.replace('.pkl', '') for name in file_names]
-        selected_random_walks = random.sample(file_names, 3)
-        cls.phases_random_walks = [int(selected) for selected in selected_random_walks]
+        selected_random_walks = random.sample(file_names, 4)
+        cls.phases_random_walks = [int(selected) for selected in selected_random_walks][:3]
+        cls.trainings_random_walk = int(selected_random_walks[3])

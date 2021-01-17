@@ -111,13 +111,11 @@ class TrialsInfo:
 
 
     @classmethod
-    def sample_for_warmup(cls, sampling_indices):
+    def set_warmup_trials_data(cls, trials_pairs, available_objects, reward_probs):
 
-        import numpy as np
-
-        cls.warmup_trials_pairs = np.array(cls.trials_pairs[0])[sampling_indices].tolist()
-        cls.warmup_available_objects = np.array(cls.trials_availables_objects[0])[sampling_indices].tolist()
-        cls.warmup_reward_probs = np.array(cls.trials_availables_objects_reward_probs[0])[sampling_indices].tolist()
+        cls.warmup_trials_pairs = trials_pairs
+        cls.warmup_available_objects = available_objects
+        cls.warmup_reward_probs = reward_probs
 
 
     @classmethod

@@ -13,11 +13,20 @@ class TaskLogics:
     @staticmethod
     def assign_trials_pairs():
 
+        trials_pairs = TaskLogics.select_trial_pairs(TaskParams.n_trials)
+        TrialsInfo.set_trials_pairs(
+            np.reshape(trials_pairs, (TaskParams.num_of_blocks, TaskParams.num_of_block_trials, 2)).tolist()
+        )
+
+
+    @staticmethod
+    def select_trial_pairs(n_trials):
+
         task_option_pairs_copy = copy.deepcopy(TaskParams.options_pairs)
         first_four_trials = TaskLogics._find_first_two_pairs(task_option_pairs_copy)
-        remained_trials = []
 
-        for i in range(int(TaskParams.n_trials/4)-1):
+        remained_trials = []
+        for i in range(int(n_trials/4) - 1):
             remained_trials.extend(task_option_pairs_copy)
         random.shuffle(remained_trials)
 
@@ -27,36 +36,30 @@ class TaskLogics:
             same_order = random.choice([0, 1])
             trials_pairs[i] = tuple(trials_pairs[i]) if same_order else (trials_pairs[i][1], trials_pairs[i][0])
 
-        TrialsInfo.set_trials_pairs(
-            np.reshape(trials_pairs, (TaskParams.num_of_blocks, TaskParams.num_of_block_trials, 2)).tolist()
-        )
+        return trials_pairs
 
 
     @staticmethod
     def manage_warmup_trials():
 
-        not_finished = lambda sampled, selected: len(sampled) + len(selected) < TaskParams.n_warm_up_trials
-        selected_indices = TaskLogics.sample_trials(not_finished)
-        TrialsInfo.sample_for_warmup(selected_indices)
+        trials = TaskLogics.select_trial_pairs(TaskParams.n_warm_up_trials)
+        available_objects = TaskLogics.find_available_objects(trials)
+        reward_probs = TaskLogics.select_reward_prob_for_training(TaskParams.n_warm_up_trials)
+        TrialsInfo.set_warmup_trials_data(trials, available_objects, reward_probs)
 
 
     @staticmethod
-    def sample_trials(finish_func):
+    def select_reward_prob_for_training(n_trials):
 
-        selected_indices = [0, 1, 2, 3]
-        random.shuffle(selected_indices)
-        sampled_indices, visited_options = [], []
-        while finish_func(sampled_indices, selected_indices):
-            for ind, trial_pair in enumerate(TrialsInfo.trials_pairs[0]):
-                if ind >= len(selected_indices) and finish_func(sampled_indices, selected_indices):
-                    if (str(trial_pair) not in visited_options) and (random.random() < 0.1):
-                        sampled_indices.append(ind)
-                        visited_options.append(str(trial_pair))
-                elif not finish_func(sampled_indices, selected_indices):
-                    break
+        reward_probs = TaskLogics.find_reward_probs('training')
+        random_block = random.randint(0, 3)
+        start_index = random.randint(
+            0, TaskParams.num_of_block_trials - n_trials
+        )
+        reward_probs = \
+            reward_probs[random_block][start_index:start_index+n_trials-1]
 
-        random.shuffle(sampled_indices)
-        return selected_indices + sampled_indices
+        return reward_probs
 
 
     @staticmethod
@@ -155,30 +158,49 @@ class TaskLogics:
 
         objects = []
         for block in range(TaskParams.num_of_blocks):
-            block_objects = []
-            for pair in TrialsInfo.trials_pairs[block]:
-
-                objects1 = TaskParams.objects_of_options[pair[0]]
-                objects2 = TaskParams.objects_of_options[pair[1]]
-                random.shuffle(objects1), random.shuffle(objects2)
-                trial_objects = [objects1, objects2]
-                block_objects.append(trial_objects)
-
+            block_objects = TaskLogics.find_available_objects(TrialsInfo.trials_pairs[block])
             objects.append(block_objects)
 
         TrialsInfo.set_trials_available_objects(objects)
 
 
     @staticmethod
+    def find_available_objects(trials_pairs):
+
+        block_objects = []
+        for pair in trials_pairs:
+            objects1 = TaskParams.objects_of_options[pair[0]]
+            objects2 = TaskParams.objects_of_options[pair[1]]
+            random.shuffle(objects1), random.shuffle(objects2)
+            trial_objects = [objects1, objects2]
+            block_objects.append(trial_objects)
+
+        return block_objects
+
+
+    @staticmethod
     def set_objects_reward_probs(phase):
 
-        random_walk_file_name = '{}walk{}.pkl'.format(
-            TaskParams.random_walks_path, SubjectParams.phases_random_walks[phase-1]
-        )
+        objects_reward_probs = TaskLogics.find_reward_probs(phase)
+        TrialsInfo.set_objects_reward_probs(objects_reward_probs)
+
+
+    @staticmethod
+    def find_reward_probs(phase):
+
+        if phase == 'trainings':
+            random_walk_file_name = '{}walk{}.pkl'.format(
+                TaskParams.random_walks_path, SubjectParams.trainings_random_walk
+            )
+        else:
+            random_walk_file_name = '{}walk{}.pkl'.format(
+                TaskParams.random_walks_path, SubjectParams.phases_random_walks[phase - 1]
+            )
+
         with open(random_walk_file_name, 'rb') as file:
             objects_reward_probs = pickle.load(file)
 
-        TrialsInfo.set_objects_reward_probs(objects_reward_probs)
+        return objects_reward_probs
 
 
     @staticmethod

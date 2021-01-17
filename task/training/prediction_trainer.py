@@ -1,4 +1,5 @@
 from task.params.task_params import TaskParams
+from task.task_logics import TaskLogics
 
 import random
 
@@ -94,20 +95,13 @@ class PredictionTrainer:
     @classmethod
     def manage_training_trials(cls):
 
-        trial_pairs = [random.choice(TaskParams.options_pairs) for _ in range(4*cls.num_training_repeat)]
-        available_objects = [
-            [
-                TaskParams.objects_of_options[options[0]],
-                TaskParams.objects_of_options[options[1]]
-            ] for options in trial_pairs
-        ]
-        rewards = [
-            [
-                (random.choice([0, 1]), random.choice([0, 1])),
-                (random.choice([0, 1]), random.choice([0, 1]))
-            ]
-            for options in trial_pairs
-        ]
+        trial_pairs = []
+        for _ in range(cls.num_training_repeat):
+            trial_pairs.extend(TaskParams.options_pairs)
+        random.shuffle(trial_pairs)
+        available_objects = TaskLogics.find_available_objects(trial_pairs)
+        reward_probs = TaskLogics.select_reward_prob_for_training(4*cls.num_training_repeat)
+        generated_randoms, rewards = TaskLogics.set_reward(reward_probs)
         agent_selections = [options[random.choice([0, 1])] for options in trial_pairs]
 
         return trial_pairs, available_objects, rewards, agent_selections
