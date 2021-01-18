@@ -48,7 +48,8 @@ class Dumper:
                             [int(o) for o in Trials.visited_objects[block][trial]],
                         'gained_rewards': None if not Trials.objects_gained_rewards[block][trial] else\
                             [int(r) for r in Trials.objects_gained_rewards[block][trial]],
-                        'reaction_times': Trials.selection_reaction_times[block][trial]
+                        'reaction_times': None if Trials.selection_reaction_times[block][trial] == float('inf') else \
+                            Trials.selection_reaction_times[block][trial]
                     }
                     if is_prediction:
                         row['predictions'] = Trials.subject_predictions[block][trial]
@@ -113,8 +114,8 @@ class Dumper:
 
                     row = {
                         'round': round,
-                        'options': Trainer.options_of_quiz_phase2[round][index],
-                        'objects_orders': Trainer.objects_of_quiz_phase2[round][index],
+                        'options_order': Trainer.options_of_quiz_phase2[round][index],
+                        'objects': Trainer.objects_of_quiz_phase2[round][index],
                         'reponses': Trainer.quiz_phase2_responses[round][index],
                         'reaction_times': Trainer.quiz_phase2_response_times[round][index]
                     }

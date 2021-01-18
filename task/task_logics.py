@@ -55,7 +55,7 @@ class TaskLogics:
     def select_reward_prob_for_training(n_trials):
 
         reward_probs = TaskLogics.find_reward_probs('training')
-        random_block = random.randint(0, 3)
+        random_block = random.randint(0, TaskParams.num_of_blocks-1)
         start_index = random.randint(
             0, TaskParams.num_of_block_trials - n_trials
         )
@@ -172,8 +172,8 @@ class TaskLogics:
 
         block_objects = []
         for pair in trials_pairs:
-            objects1 = TaskParams.objects_of_options[pair[0]]
-            objects2 = TaskParams.objects_of_options[pair[1]]
+            objects1 = copy.deepcopy(TaskParams.objects_of_options[pair[0]])
+            objects2 = copy.deepcopy(TaskParams.objects_of_options[pair[1]])
             random.shuffle(objects1), random.shuffle(objects2)
             trial_objects = [objects1, objects2]
             block_objects.append(trial_objects)
