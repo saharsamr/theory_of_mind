@@ -45,7 +45,10 @@ class TaskLogics:
         trials = TaskLogics.select_trial_pairs(TaskParams.n_warm_up_trials)
         available_objects = TaskLogics.find_available_objects(trials)
         reward_probs = TaskLogics.select_reward_prob_for_training(TaskParams.n_warm_up_trials)
-        TrialsInfo.set_warmup_trials_data(trials, available_objects, reward_probs)
+        available_objects_reward_probs = TaskLogics.set_block_available_objects_reward_probs(
+            available_objects, reward_probs
+        )
+        TrialsInfo.set_warmup_trials_data(trials, available_objects, available_objects_reward_probs)
 
 
     @staticmethod
@@ -57,7 +60,7 @@ class TaskLogics:
             0, TaskParams.num_of_block_trials - n_trials
         )
         reward_probs = \
-            reward_probs[random_block][start_index:start_index+n_trials-1]
+            reward_probs[random_block][start_index:start_index+n_trials]
 
         return reward_probs
 
@@ -188,7 +191,7 @@ class TaskLogics:
     @staticmethod
     def find_reward_probs(phase):
 
-        if phase == 'trainings':
+        if phase == 'training':
             random_walk_file_name = '{}walk{}.pkl'.format(
                 TaskParams.random_walks_path, SubjectParams.trainings_random_walk
             )
@@ -208,19 +211,29 @@ class TaskLogics:
 
         all_trials_probs = []
         for block in range(TaskParams.num_of_blocks):
-            block_trials_reward_probs = []
-            for trial_objects, objects_reward_probs in zip(\
-                TrialsInfo.trials_availables_objects[block], TrialsInfo.objects_reward_probs_during_trials[block]\
-            ):
-                objects1, objects2 = trial_objects
-                trial_rewards_probs = [
-                    (objects_reward_probs[objects1[0]%10], objects_reward_probs[objects1[1]%10]),
-                    (objects_reward_probs[objects2[0]%10], objects_reward_probs[objects2[1]%10])
-                ]
-                block_trials_reward_probs.append(trial_rewards_probs)
+            block_trials_reward_probs = TaskLogics.set_block_available_objects_reward_probs(
+                TrialsInfo.trials_availables_objects[block],
+                TrialsInfo.objects_reward_probs_during_trials[block]
+            )
             all_trials_probs.append(block_trials_reward_probs)
 
         TrialsInfo.set_available_objects_reward_probs(all_trials_probs)
+
+
+    @staticmethod
+    def set_block_available_objects_reward_probs(available_objects, reward_probs):
+
+        block_trials_reward_probs = []
+        for trial_objects, objects_reward_probs in \
+                zip(available_objects, reward_probs):
+            objects1, objects2 = trial_objects
+            trial_rewards_probs = [
+                (objects_reward_probs[objects1[0] % 10], objects_reward_probs[objects1[1] % 10]),
+                (objects_reward_probs[objects2[0] % 10], objects_reward_probs[objects2[1] % 10])
+            ]
+            block_trials_reward_probs.append(trial_rewards_probs)
+
+        return block_trials_reward_probs
 
 
     @staticmethod

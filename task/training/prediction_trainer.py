@@ -101,7 +101,10 @@ class PredictionTrainer:
         random.shuffle(trial_pairs)
         available_objects = TaskLogics.find_available_objects(trial_pairs)
         reward_probs = TaskLogics.select_reward_prob_for_training(4*cls.num_training_repeat)
-        generated_randoms, rewards = TaskLogics.set_reward(reward_probs)
+        available_object_reward_probs = TaskLogics.set_block_available_objects_reward_probs(
+            available_objects, reward_probs
+        )
+        generated_randoms, rewards = TaskLogics.set_reward(available_object_reward_probs)
         agent_selections = [options[random.choice([0, 1])] for options in trial_pairs]
 
         return trial_pairs, available_objects, rewards, agent_selections
