@@ -28,6 +28,7 @@ def main():
     Dumper.save_quiz_phase1_data(TaskParams.data_dir, '{}-quiz-phase1'.format(SubjectParams.subject_id))
     Dumper.save_quiz_phase2_data(TaskParams.data_dir, '{}-quiz-phase2'.format(SubjectParams.subject_id))
 
+    presenter.present_instructions('prediction-training')
     PredictionTrainer.start_training(presenter)
     Dumper.save_prediction_training_data(
         TaskParams.data_dir, '{}-prediction-training'.format(SubjectParams.subject_id)

@@ -125,15 +125,31 @@ class PresentationClass:
 
     def present_prediction_training_step(self, options, selected, predicted, time_limit=float('inf')):
 
-        # add question
-        agent_selected = \
-            self.present_prediction_training_question(options, selected, time_limit)
-        # add question
-        user_predicted = \
-            self.present_prediction_training_question(options, predicted, time_limit)
+        agent_selected = self.ask_question_find_answer(
+            '{}agent_selection?.png'.format(TaskParams.image_dir),
+            options, selected, time_limit
+        )
+
+        user_predicted = self.ask_question_find_answer(
+            '{}user_prediction?.png'.format(TaskParams.image_dir),
+            options, predicted, time_limit
+        )
 
         return agent_selected, user_predicted
-        
+
+
+    def ask_question_find_answer(self, question_image, options, selected, time_limit):
+
+        self.draw_image(
+            question_image, size=TaskParams.screen_size
+        )
+        sleep(TaskParams.time_limit_training_question)
+        agent_selected = \
+            self.present_prediction_training_question(options, selected, time_limit)
+        sleep(TaskParams.feedback_duration)
+
+        return agent_selected
+
 
     def present_prediction_training_question(self, options, true_response, time_limit=float('inf')):
 
