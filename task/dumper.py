@@ -21,7 +21,8 @@ class Dumper:
                 'gender': SubjectParams.subject_gender,
                 'option_pairs': TaskParams.options_pairs,
                 'objects_of_options': TaskParams.objects_of_options,
-                'phases_random_walks': SubjectParams.phases_random_walks
+                'phases_random_walks': SubjectParams.phases_random_walks,
+                'training_random_walk': SubjectParams.trainings_random_walk
             }
 
             json.dump(params, param_file)
