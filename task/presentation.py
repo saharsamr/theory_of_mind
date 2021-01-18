@@ -44,6 +44,12 @@ class PresentationClass:
             self.screen.flip()
 
 
+    def present_rest(self):
+
+        self.draw_image(TaskParams.image_dir + 'rest.png', size=TaskParams.screen_size)
+        sleep(TaskParams.time_for_rest)
+
+
     def draw_rectangle(self, x1, y1, x2, y2, color):
 
         self.draw_line(x1, y1, x2, y1, color)

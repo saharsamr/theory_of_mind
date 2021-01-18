@@ -18,9 +18,9 @@ def main():
     subject_info = presenter.present_info_box()
     SubjectParams.set_subject_info(subject_info)
     TaskParams.set_subject_data_dir(SubjectParams.subject_id)
-    Dumper.save_params(TaskParams.data_dir, '{}-params'.format(SubjectParams.subject_id))
 
     Task.initialize()
+    Dumper.save_params(TaskParams.data_dir, '{}-params'.format(SubjectParams.subject_id))
 
     presenter.present_instructions('start-training')
     Trainer.start_training(presenter)
@@ -41,11 +41,15 @@ def main():
     Task.start_task(presenter)
     Dumper.save_phase_data(TaskParams.data_dir, '{}-task-phase1'.format(SubjectParams.subject_id))
 
+    presenter.present_rest()
+
     presenter.present_instructions('phase2')
     agent, agent_name = (MFAgent, 'MF') if random.random() < 0.5 else (MBAgent, 'MB')
     agent.initialize_trials()
     agent.start_agent_task(presenter)
     Dumper.save_phase_data(TaskParams.data_dir, '{}-task-phase2'.format(SubjectParams.subject_id), is_prediction=True, agent=agent_name)
+
+    presenter.present_rest()
 
     presenter.present_instructions('phase3')
     Task.initialize(first_phase=False, phase=3)

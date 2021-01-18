@@ -2,8 +2,6 @@ from task.task_logics import TaskLogics
 from task.trials_info import TrialsInfo
 from task.params.task_params import TaskParams
 
-from time import sleep
-
 
 class Task:
 
@@ -48,8 +46,7 @@ class Task:
         for block in range(TaskParams.num_of_blocks):
 
             if len(selecteds) != 0:
-                presenter.draw_image(TaskParams.image_dir+'rest.png', size=TaskParams.screen_size)
-                sleep(TaskParams.time_for_rest)
+                presenter.present_rest()
                 presenter.present_instructions('next-block')
 
             block_selected, block_reaction_time = Task.run_trials_block(

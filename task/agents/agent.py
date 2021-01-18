@@ -47,6 +47,10 @@ class Agent(abc.ABC):
         reaction_times, predicteds = [], []
         for block in range(TaskParams.n_agent_blocks):
 
+            if len(selecteds) != 0:
+                presenter.present_rest()
+                presenter.present_instructions('next-block')
+
             cls.initialize_qvalues()
             block_selected, block_rewards, block_objects, block_reaction_time, block_predicted = \
             cls.run_agent_trials_block(
