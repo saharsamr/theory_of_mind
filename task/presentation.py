@@ -13,8 +13,9 @@ class PresentationClass:
         self.screen = visual.Window(screen_size, monitor="testMonitor", units="pix", fullscr=True)
 
 
-    @staticmethod
-    def present_info_box():
+    def present_info_box(self):
+
+        self.exit_fullscreen()
 
         dlg = gui.Dlg(title="Subject's Info")
         dlg.addField('Name:')
@@ -22,9 +23,28 @@ class PresentationClass:
         dlg.addField('Gender:', choices=['Male', 'Female', 'Other'])
         ok_data = dlg.show()
 
+        self.enter_fullscreen()
+
         if dlg.OK:
             return {'name': ok_data[0], 'age': ok_data[1], 'gender': ok_data[2]}
         return None
+
+
+    def exit_fullscreen(self):
+
+        self.screen.fullscr = False
+        self.screen.winHandle.set_fullscreen(False)
+        self.screen.winHandle.minimize()
+        self.screen.flip()
+
+
+    def enter_fullscreen(self):
+
+        self.screen.winHandle.maximize()
+        self.screen.winHandle.activate()
+        self.screen.fullscr = True
+        self.screen.winHandle.set_fullscreen(True)
+        self.screen.flip()
 
 
     def draw_image(self, image_path, pos=[0, 0], size=None, flip=True):
