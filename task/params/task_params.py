@@ -2,8 +2,6 @@ from pathlib import Path
 
 class TaskParams:
 
-    screen_size = [2736, 1824]
-
     data_dir = 'task/data/'
     image_dir = 'task/images/'
     instructions_path = 'task/instructions/'

@@ -1,6 +1,7 @@
 from task.presentation import PresentationClass
 from task.params.subject_params import SubjectParams
 from task.params.task_params import TaskParams
+from task.params.scr_params import SCRParams
 from task.task import Task
 from task.training.trainer import Trainer
 from task.training.prediction_trainer import PredictionTrainer
@@ -13,7 +14,7 @@ import random
 
 def main():
 
-    presenter = PresentationClass(screen_size=TaskParams.screen_size)
+    presenter = PresentationClass(screen_size=SCRParams.screen_size)
 
     subject_info = presenter.present_info_box()
     SubjectParams.set_subject_info(subject_info)

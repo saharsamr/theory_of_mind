@@ -1,4 +1,5 @@
 from task.params.task_params import TaskParams
+from task.params.scr_params import SCRParams
 from tools.directory_files import get_file_names
 from task.interactions import Interaction
 
@@ -47,9 +48,23 @@ class PresentationClass:
         self.screen.flip()
 
 
+    def convert_relative_to_absolute_pos_size(self, poses, sizes):
+
+        scr_size = SCRParams.screen_size
+
+        real_pos = [
+            int(poses[0] * scr_size[0]), int(poses[1] * scr_size[1])
+        ]
+        real_size = None if sizes == None else [
+            int(scr_size[0] * sizes[0]), int(scr_size[1] * sizes[1])
+        ]
+
+        return real_pos, real_size
+
     def draw_image(self, image_path, pos=[0, 0], size=None, flip=True):
 
-        image = visual.ImageStim(self.screen, image_path, pos=pos, size=size)
+        real_pos, real_size = self.convert_relative_to_absolute_pos_size(pos, size)
+        image = visual.ImageStim(self.screen, image_path, pos=real_pos, size=real_size)
         image.draw()
         if flip:
             self.screen.flip()
@@ -58,7 +73,8 @@ class PresentationClass:
     def draw_multiple_images(self, images_path, poses, sizes, flip=True):
 
         for path, pos, size in zip(images_path, poses, sizes):
-            image = visual.ImageStim(self.screen, path, pos=pos, size=size)
+            real_pos, real_size = self.convert_relative_to_absolute_pos_size(pos, size)
+            image = visual.ImageStim(self.screen, path, pos=real_pos, size=real_size)
             image.draw()
         if flip:
             self.screen.flip()
@@ -66,7 +82,7 @@ class PresentationClass:
 
     def present_rest(self):
 
-        self.draw_image(TaskParams.image_dir + 'rest.png', size=TaskParams.screen_size)
+        self.draw_image(TaskParams.image_dir + 'rest.png', size=SCRParams.screen_size)
         sleep(TaskParams.time_for_rest)
 
 
@@ -87,26 +103,37 @@ class PresentationClass:
         line.draw()
 
 
+    def draw_trial_options(self, options, flip=True):
+
+        self.draw_multiple_images(
+            ['{}{}.jpg'.format(TaskParams.image_dir, options[0]), '{}{}.jpg'.format(TaskParams.image_dir, options[1])],
+            [
+                [-SCRParams.option_x_index, SCRParams.option_y_index],
+                [SCRParams.option_x_index, SCRParams.option_y_index]
+            ],
+            [
+                [SCRParams.option_x_size, SCRParams.option_y_size],
+                [SCRParams.option_x_size, SCRParams.option_y_size]
+            ], flip=flip
+        )
+
     def present_trial(self, options, objects, rewards, time_limit=float('inf')):
 
         start, reaction_time = time(), 0
-        self.draw_multiple_images(
-            ['{}{}.jpg'.format(TaskParams.image_dir, options[0]), '{}{}.jpg'.format(TaskParams.image_dir, options[1])],
-            [[-200, 0], [200, 0]], [[300, 500], [300, 500]]
-        )
+        self.draw_trial_options(options)
 
         key = Interaction.option_select(time_limit)
         if not key:
-            self.draw_image(TaskParams.image_dir+'faster.png', size=TaskParams.screen_size)
+            self.draw_image(
+                TaskParams.image_dir+'faster.png',
+                size=[SCRParams.alerts_x_size, SCRParams.alerts_y_size]
+            )
             sleep(TaskParams.feedback_duration)
             return key, float('inf')
         reaction_time = time() - start
 
         index = 0 if key == 'left' else 1
-        self.draw_multiple_images(
-            ['{}{}.jpg'.format(TaskParams.image_dir, options[0]), '{}{}.jpg'.format(TaskParams.image_dir, options[1])],
-            [[-200, 0], [200, 0]], [[300, 500], [300, 500]], flip=False
-        )
+        self.draw_trial_options(options, flip=False)
         self.draw_selected_rectangle(key)
         self.screen.flip()
         sleep(TaskParams.lag_to_response)
@@ -118,17 +145,21 @@ class PresentationClass:
 
     def draw_selected_rectangle(self, key, color=[-1, 1, -1]):
 
-        x1, y1, x2, y2 = (-360, 260, -40, -260) if key == 'left' else (40, 260, 360, -260)
+        scr_size = SCRParams.screen_size
+        if key == 'left':
+            x1, x2 = int(SCRParams.l_rect_left*scr_size[0]), int(SCRParams.l_rect_right*scr_size[0])
+        elif key == 'right':
+            x1, x2 = int(SCRParams.r_rect_left*scr_size[0]), int(SCRParams.r_rect_right*scr_size[0])
+
+        y1, y2 = int(SCRParams.rect_top*scr_size[1]), int(SCRParams.rect_buttom*scr_size[1])
+
         self.draw_rectangle(x1, y1, x2, y2, color)
 
 
     def present_agent_trial(self, options, selected, selected_objects, selected_rewards, time_limit=float('inf')):
 
         start, reaction_time = time(), 0
-        self.draw_multiple_images(
-            ['{}{}.jpg'.format(TaskParams.image_dir, options[0]), '{}{}.jpg'.format(TaskParams.image_dir, options[1])],
-            [[-200, 0], [200, 0]], [[300, 500], [300, 500]]
-        )
+        self.draw_trial_options(options)
         key = Interaction.option_select(time_limit)
 
         reaction_time = time() - start
@@ -161,7 +192,8 @@ class PresentationClass:
     def ask_question_find_answer(self, question_image, options, selected, time_limit):
 
         self.draw_image(
-            question_image, size=TaskParams.screen_size
+            question_image,
+            size=[SCRParams.instruction_x_size, SCRParams.instruction_y_size]
         )
         sleep(TaskParams.time_limit_training_question)
         agent_selected = \
@@ -173,10 +205,7 @@ class PresentationClass:
 
     def present_prediction_training_question(self, options, true_response, time_limit=float('inf')):
 
-        self.draw_multiple_images(
-            ['{}{}.jpg'.format(TaskParams.image_dir, options[0]), '{}{}.jpg'.format(TaskParams.image_dir, options[1])],
-            [[-200, 0], [200, 0]], [[300, 500], [300, 500]]
-        )
+        self.draw_trial_options(options)
         key = Interaction.option_select(time_limit)
         response_index = 0 if key == 'left' else 1
 
@@ -191,11 +220,21 @@ class PresentationClass:
     def present_prediction_reward(self, predicted_option, selected_option):
 
         if predicted_option != selected_option:
-            self.draw_image(TaskParams.image_dir+'fail.png', size=[500, 500])
+            self.draw_image(
+                TaskParams.image_dir+'fail.png',
+                size=[SCRParams.prediction_reward_x_size, SCRParams.prediction_reward_y_size]
+            )
         else:
             self.draw_multiple_images(
                 [TaskParams.image_dir+'check.png', TaskParams.image_dir+'money.png'],
-                [[0, 0], [-150, -150]], [[500, 500], [300, 300]]
+                [
+                    [SCRParams.prediction_reward_x_index, SCRParams.prediction_reward_y_index],
+                    [SCRParams.money_x_index, SCRParams.money_y_index]
+                ],
+                [
+                    [SCRParams.prediction_reward_x_size, SCRParams.prediction_reward_y_size],
+                    [SCRParams.money_x_size, SCRParams.money_y_size]
+                ]
             )
         sleep(TaskParams.feedback_duration)
 
@@ -211,13 +250,26 @@ class PresentationClass:
                     '{}{}.jpg'.format(TaskParams.image_dir, object),
                     '{}{}.png'.format(TaskParams.image_dir, 'reward' if reward else 'box')
                 ],
-                [[0, 100], [0, -350], [-275, -525]], [[200, 300], [700, 500], [150, 150]]
+                [
+                    [SCRParams.small_option_x_index, SCRParams.small_option_y_index],
+                    [SCRParams.object_x_index, SCRParams.object_y_index],
+                    [SCRParams.reward_x_index, SCRParams.reward_y_index]
+                ],
+                [
+                    [SCRParams.small_option_x_size, SCRParams.small_option_y_size],
+                    [SCRParams.object_x_size, SCRParams.object_y_size],
+                    [SCRParams.reward_x_size, SCRParams.reward_y_size]
+                ]
             )
             sleep(TaskParams.feedback_duration)
 
             if i == 0:
                 self.draw_image('{}gray.png'.format(TaskParams.image_dir), flip=False)
-                self.draw_image('{}{}.jpg'.format(TaskParams.image_dir, option), size=[200, 300], pos=[0, 100])
+                self.draw_image(
+                    '{}{}.jpg'.format(TaskParams.image_dir, option),
+                    size=[SCRParams.small_option_x_size, SCRParams.small_option_y_size],
+                    pos=[SCRParams.small_option_x_index, SCRParams.small_option_y_index]
+                )
             else:
                 self.draw_image('{}gray.png'.format(TaskParams.image_dir))
 
@@ -233,7 +285,10 @@ class PresentationClass:
         while True:
 
             image = images_name[instruction_index]
-            self.draw_image(instruction_folder+image, size=TaskParams.screen_size)
+            self.draw_image(
+                instruction_folder+image,
+                size=[SCRParams.instruction_x_size, SCRParams.instruction_y_size]
+            )
 
             key_list = Interaction.instrutions_allowed_keys(instruction_index, num_of_images)
             keys = event.waitKeys(keyList=key_list)
@@ -244,25 +299,37 @@ class PresentationClass:
                 break
 
 
+    def draw_option_object_training(self, object, option):
+
+        self.draw_multiple_images(
+            ['{}{}.jpg'.format(TaskParams.image_dir, object), '{}{}.jpg'.format(TaskParams.image_dir, option)],
+            [
+                [SCRParams.training_object_x_index, SCRParams.training_object_y_index],
+                [SCRParams.training_option_x_index, SCRParams.training_option_y_index]
+            ],
+            [
+                [SCRParams.training_object_x_size, SCRParams.training_object_y_size],
+                [SCRParams.option_x_size, SCRParams.option_y_size]]
+        )
+
+
     def present_training_step(self, option, objects):
 
         start, reaction_time = time(), 0
-        self.draw_image(TaskParams.image_dir+str(option)+'.jpg', pos=[0, 550], size=[300, 500])
+        self.draw_image(
+            TaskParams.image_dir+str(option)+'.jpg',
+            pos=[SCRParams.training_option_x_index, SCRParams.training_option_y_index],
+            size=[SCRParams.option_x_size, SCRParams.option_y_size]
+        )
         if Interaction.ready_to_present_option_objects():
             reaction_time = time() - start
             sleep(TaskParams.lag_to_response)
 
-        self.draw_multiple_images(
-            ['{}{}.jpg'.format(TaskParams.image_dir, objects[0]), '{}{}.jpg'.format(TaskParams.image_dir, option)],
-            [[0, 0], [0, 550]], [[700, 500], [300, 500]]
-        )
+        self.draw_option_object_training(objects[0], option)
         sleep(TaskParams.object_presentation_time_in_training)
 
 
-        self.draw_multiple_images(
-            ['{}{}.jpg'.format(TaskParams.image_dir, objects[1]), '{}{}.jpg'.format(TaskParams.image_dir, option)],
-            [[0, 0], [0, 550]], [[700, 500], [300, 500]]
-        )
+        self.draw_option_object_training(objects[1], option)
         sleep(TaskParams.object_presentation_time_in_training)
 
         self.draw_image(TaskParams.image_dir+'gray.png')
@@ -280,7 +347,16 @@ class PresentationClass:
                 '{}{}.jpg'.format(TaskParams.image_dir, objects[0]),
                 '{}{}.jpg'.format(TaskParams.image_dir, objects[1])
             ],
-            [[0,0], [-550, 0], [550, 0]], [[300, 500], [700, 500], [700, 500]]
+            [
+                [SCRParams.quiz1_option_x_index, SCRParams.quiz1_option_y_index],
+                [-SCRParams.quiz1_object_x_index, SCRParams.quiz1_object_y_index],
+                [SCRParams.quiz1_object_x_index, SCRParams.quiz1_object_y_index]
+            ],
+            [
+                [SCRParams.option_x_size, SCRParams.option_y_size],
+                [SCRParams.training_object_x_size, SCRParams.training_object_y_size],
+                [SCRParams.training_object_x_size, SCRParams.training_object_y_size]
+            ]
         )
 
         key = Interaction.quiz_answer()
@@ -298,7 +374,16 @@ class PresentationClass:
                 '{}{}.jpg'.format(TaskParams.image_dir, options[0]),
                 '{}{}.jpg'.format(TaskParams.image_dir, options[1])
             ],
-            [[0,0], [-550, 0], [550, 0]], [[700, 500], [300, 500], [300, 500]]
+            [
+                [SCRParams.quiz2_object_x_index, SCRParams.quiz2_object_y_index],
+                [-SCRParams.quiz2_option_x_index, SCRParams.quiz2_option_y_index],
+                [SCRParams.quiz2_option_x_index, SCRParams.quiz2_option_y_index]
+            ],
+            [
+                [SCRParams.training_object_x_size, SCRParams.training_object_y_size],
+                [SCRParams.option_x_size, SCRParams.option_y_size],
+                [SCRParams.option_x_size, SCRParams.option_y_size]
+            ]
         )
 
         key = Interaction.quiz_answer()
